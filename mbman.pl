@@ -39,21 +39,28 @@ our $mbman = undef;
 exit &main();    # Hauptprogramm
 
 sub main {
+
     if (@ARGV) {
+
         getopts('S:U:P:hvilst');
-        $opt_h and do { &print_help();        return 1 };
+        $opt_h and do { &print_help(); return 1 };
+
+        $mbman = MBMan->new( Debug => $opt_v );
+
         $opt_i and do { &print_mailbox_info;  return 1 };
         $opt_l and do { &print_message_infos; return 1 };
+
         &print_info(0);
         return 0;
+
     }
+
     &print_info(1);
     return 0;
+
 }
 
 sub login {
-
-    $mbman = MBMan->new( Debug => $opt_v );
 
     $mbman->connect( Server => $opt_S, );
 
