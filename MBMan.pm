@@ -82,18 +82,28 @@ sub login
   # User-Login auf einem IMAP-Server durchführen
   #
 {
+
     my $self = shift;
     my $imap = $self->{Imap};
 
     while (@_) {
+
         my $k = ucfirst lc shift;
         my $v = shift;
         $self->{$k} = $v if defined $v;
+
     }
 
-    $imap->User( $self->{User} );
-    $imap->Password( $self->{Password} );
-    $imap->login || die;
+    if ( $imap->IsConnected ) {
+
+        $imap->User( $self->{User} );
+        $imap->Password( $self->{Password} );
+        $imap->login || die;
+
+    }
+
+    return 1;
+
 }
 
 sub logout
