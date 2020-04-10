@@ -32,31 +32,40 @@ sub new
   # Konstruktor
   #
 {
+
     my $class = shift;
-    my $self  = {
+
+    my $self = {
+
         Debug     => 0,
         Ssl       => 1,
         Peek      => 1,
         Uid       => 1,
         Directory => '~/MBData'
+
     };
 
     while (@_) {
+
         my $k = ucfirst lc shift;
         my $v = shift;
         $self->{$k} = $v if defined $v;
+
     }
 
     bless $self, ref($class) || $class;
 
     $self->{Imap} = Mail::IMAPClient->new(
+
         Debug => $self->{Debug},
         Ssl   => $self->{Ssl},
         Peek  => $self->{Peek},
         Uid   => $self->{Uid}
+
     ) || die;
 
     return $self;
+
 }
 
 sub connect
