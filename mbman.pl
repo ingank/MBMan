@@ -2,7 +2,7 @@
 #
 # mbman.pl
 #
-# Kommandoszeilentool zum Zugriff auf die MBMan API.
+# Kommandoszeilentool zum Testen des Moduls MBMan.
 #
 
 use strict;
@@ -60,20 +60,32 @@ sub main {
 
 }
 
+sub connect {
+
+    if ($opt_S) {
+
+        $mbman->connect( Server => $opt_S );
+
+    }
+
+}
+
 sub login {
 
-    $mbman->connect( Server => $opt_S, );
+    if ( $opt_U and $opt_P ) {
 
-    $mbman->login(
-        User     => $opt_U,
-        Password => $opt_P,
-    );
+        $mbman->login(
+            User     => $opt_U,
+            Password => $opt_P,
+        );
+
+    }
 
 }
 
 sub disconnect {
 
-    $mbman->logout();
+    $mbman->logout;
 
 }
 
@@ -83,6 +95,7 @@ sub print_mailbox_info
   #
 {
 
+    &connect;
     &login;
 
     my $info = $mbman->mailbox_info;
@@ -98,6 +111,7 @@ sub print_message_infos
   #
 {
 
+    &connect;
     &login;
 
     my $info = $mbman->fetch_message_infos( Modus => 'All', DecodeMime => 0, HashEnv => 1 );
