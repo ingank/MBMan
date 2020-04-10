@@ -115,6 +115,9 @@ sub login
 
     }
 
+    return 0 if not $self->{User};
+    return 0 if not $self->{Password};
+
     if ( $imap->IsConnected ) {
 
         $imap->User( $self->{User} );
