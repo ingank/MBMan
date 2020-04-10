@@ -104,10 +104,18 @@ sub logout
   # zum IMAP-Server aufgebaut und der Login ausgeführt werden.
   #
 {
+
     my $self = shift;
     my $imap = $self->{Imap};
-    $imap->logout || die;
+
+    if ( $imap->IsConnected ) {
+
+        $imap->logout || die;
+
+    }
+
     return 1;
+
 }
 
 sub mailbox_info
@@ -433,7 +441,7 @@ sub limit
 
         }
 
-      #  print "$quota ... $usage ... $limit";
+        #  print "$quota ... $usage ... $limit";
 
     }
 
