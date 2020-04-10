@@ -64,17 +64,27 @@ sub connect
   # Eine Verbindung zu einem IMAP-Server aufbauen
   #
 {
+
     my $self = shift;
     my $imap = $self->{Imap};
 
     while (@_) {
+
         my $k = ucfirst lc shift;
         my $v = shift;
         $self->{$k} = $v if defined $v;
+
     }
 
-    $imap->Server( $self->{Server} );
-    $imap->connect || die;
+    if ( not $imap->IsConnected ) {
+
+        $imap->Server( $self->{Server} );
+        $imap->connect || die;
+
+    }
+
+    return 1;
+
 }
 
 sub login
