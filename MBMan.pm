@@ -85,6 +85,8 @@ sub connect
 
     }
 
+    return 0 if not $self->{Server};
+
     if ( not $imap->IsConnected ) {
 
         $imap->Server( $self->{Server} );
