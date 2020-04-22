@@ -409,6 +409,45 @@ sub fetch_message_infos
 
 }
 
+sub fetch_message
+  #
+  # Lese eine komplette Email-Nachricht.
+  #
+{
+
+    my $self = shift;
+    my $imap = $self->{Imap};
+
+    my $args = {
+
+        Mailbox  => 'INBOX',
+        ReadOnly => 1
+
+    };
+
+    while (@_) {
+
+        my $k = ucfirst lc shift;
+        my $v = shift;
+        $args->{$k} = $v if defined $v;
+
+    }
+
+    my $data     = {};
+    my $mailbox  = $args->{Mailbox};
+    my $readonly = $args->{ReadOnly};
+    my $uid      = $args->{UID} // 0;
+
+    return $data if not $uid;
+
+    if ( $imap->IsAuthenticated ) {
+
+    }
+
+    return $data;
+
+}
+
 sub limit
   #
   # Schaffe Platz in einer Mailbox durch Löschen der ältesten Mails
