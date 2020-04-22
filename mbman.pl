@@ -28,15 +28,16 @@ our $opt_S = '';
 our $opt_U = '';
 our $opt_P = '';
 our $opt_h = 0;
-our $opt_v = 0;
-our $opt_i = 0;
-our $opt_l = 0;
+our $opt_v = 0;    # verbose
+our $opt_i = 0;    # mailbox-info
+our $opt_l = 0;    # message-infos
 our $opt_s = 0;
-our $opt_t = 0;
+our $opt_t = 0;    # test
+our $opt_f = 0;    # fetch message
 
 our $mbman = undef;
 
-exit &main();    # Hauptprogramm
+exit &main();      # Hauptprogramm
 
 sub main {
 
@@ -49,6 +50,7 @@ sub main {
 
         $opt_i and do { &print_mailbox_info;  return 1 };
         $opt_l and do { &print_message_infos; return 1 };
+        $opt_f and do { &fetch_message;       return 1 };
 
         &print_info(0);
         return 0;
@@ -116,6 +118,22 @@ sub print_message_infos
 
     my $info = $mbman->fetch_message_infos( Modus => 'All', DecodeMime => 0, HashEnv => 1 );
     print Dumper ($info);
+
+    &disconnect;
+
+}
+
+sub fetch_message
+  #
+  #
+  #
+{
+
+    &connect;
+    &login;
+
+    my $message = $mbman->fetch_message( UID => 1 );
+    print Dumper ($message);
 
     &disconnect;
 
