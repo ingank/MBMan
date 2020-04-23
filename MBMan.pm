@@ -422,7 +422,8 @@ sub fetch_message
     my $args = {
 
         Mailbox  => 'INBOX',
-        ReadOnly => 1
+        ReadOnly => 1,
+        Uid      => 0
 
     };
 
@@ -437,7 +438,7 @@ sub fetch_message
     my $data     = {};
     my $mailbox  = $args->{Mailbox};
     my $readonly = $args->{ReadOnly};
-    my $uid      = $args->{UID} // 0;
+    my $uid      = $args->{Uid};
 
     return $data if not $uid;
 
@@ -453,6 +454,20 @@ sub fetch_message
             $imap->select($mailbox);
 
         }
+
+        my $message       = $imap->message_string($uid);
+        my $idate         = $imap->internaldate($uid);
+        my $hdate         = $imap->date($uid);
+        my $server_size   = $imap->size($uid);
+        my $received_size = length($message);
+        my $md5           = md5_hex($message);
+
+        $data->{Message}      = $message;
+        $data->{InternalDate} = $idate;
+        $data->{HeaderDate}   = $hdate;
+        $data->{ServerSize}   = $server_size;
+        $data->{ReceivedSize} = $received_size;
+        $data->{MD5}          = $md5;
 
     }
 
