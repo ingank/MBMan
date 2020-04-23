@@ -43,10 +43,10 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hvilst');
+        getopts('S:U:P:hvilstf');
         $opt_h and do { &print_help(); return 1 };
 
-        $mbman = MBMan->new( Debug => $opt_v );
+        $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
 
         $opt_i and do { &print_mailbox_info;  return 1 };
         $opt_l and do { &print_message_infos; return 1 };
@@ -132,7 +132,7 @@ sub fetch_message
     &connect;
     &login;
 
-    my $message = $mbman->fetch_message( UID => 1 );
+    my $message = $mbman->fetch_message( Uid => '644', ReadOnly => 0 );
     print Dumper ($message);
 
     &disconnect;
