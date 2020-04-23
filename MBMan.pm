@@ -18,8 +18,9 @@ use Mail::IMAPClient;
 use Mail::IMAPClient::BodyStructure;
 use Mail::Header;
 use Email::Address;
-use Date::Manip;             # Zeitangaben parsen
-use MIME::Words qw(:all);    # Mime decodieren
+use Date::Manip;                      # Zeitangaben parsen
+use MIME::Words qw(:all);             # Mime decodieren
+use Digest::MD5::File qw(md5_hex);    # MD5 Prüfsummen erzeugen
 use Data::Structure::Util qw(unbless);
 
 use Data::Dumper;
