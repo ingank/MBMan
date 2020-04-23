@@ -442,6 +442,17 @@ sub fetch_message
 
     if ( $imap->IsAuthenticated ) {
 
+        if ($readonly) {
+
+            $imap->examine($mailbox);
+
+        }
+        else {
+
+            $imap->select($mailbox);
+
+        }
+
     }
 
     return $data;
