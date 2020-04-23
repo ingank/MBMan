@@ -42,7 +42,7 @@ Ein IMAP-Mailboxmanager in Perl.
   * Authenticated / Authentifiziert
     * der Nutzer konnte sich gegenüber dem IMAP-Server identifizieren. (Erfolgreiches `LOGIN` oder `AUTHENTICATE` Kommando)
   * Selected / Angewählt
-    * Eine bestimmte Mailbox wurde angewählt. Wurde der Zustand 'Selected' mit Hilfe des Kommandos `SELECT` herbeigeführt, kann auf Inhalte lesend und schreibend zugegriffen werden. Auf mit Hilfe des Kommandos `EXAMINE` selektierte Mailboxen können ausschließlich lesend zugegriffen werden.
+    * Eine bestimmte Mailbox wurde angewählt. Wurde der Zustand 'Selected' mit Hilfe des Kommandos `SELECT` herbeigeführt, kann auf Inhalte lesend und schreibend zugegriffen werden. Auf mit Hilfe des Kommandos `EXAMINE` selektierte Mailboxen kann ausschließlich lesend zugegriffen werden.
 
 ## IMAP4 Implementationen
 * [RFCs Supported by Cyrus IMAP](https://github.com/cyrusimap/cyrus-imapd/blob/master/docsrc/imap/rfc-support.rst)
