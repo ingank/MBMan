@@ -414,6 +414,11 @@ sub fetch_message
   #
   # Lese eine komplette Email-Nachricht.
   #
+  # Das Ergebnis wird als Referenz auf eine Hash-Struktur zurückgegeben.
+  #
+  # Die Felder sind selbsterklärend und können mit Hilfe eines geeigneten
+  # Data-Dumper-Moduls leicht ermittelt werden. 
+  #
 {
 
     my $self = shift;
