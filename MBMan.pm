@@ -417,7 +417,7 @@ sub fetch_message
   # Das Ergebnis wird als Referenz auf eine Hash-Struktur zurückgegeben.
   #
   # Die Felder sind selbsterklärend und können mit Hilfe eines geeigneten
-  # Data-Dumper-Moduls leicht ermittelt werden. 
+  # Data-Dumper-Moduls leicht ermittelt werden.
   #
 {
 
@@ -426,9 +426,8 @@ sub fetch_message
 
     my $args = {
 
-        Mailbox  => 'INBOX',
-        ReadOnly => 1,
-        Uid      => 0
+        Mailbox => 'INBOX',
+        Uid     => 0
 
     };
 
@@ -440,25 +439,15 @@ sub fetch_message
 
     }
 
-    my $data     = {};
-    my $mailbox  = $args->{Mailbox};
-    my $readonly = $args->{ReadOnly};
-    my $uid      = $args->{Uid};
+    my $data    = {};
+    my $mailbox = $args->{Mailbox};
+    my $uid     = $args->{Uid};
 
     return $data if not $uid;
 
     if ( $imap->IsAuthenticated ) {
 
-        if ($readonly) {
-
-            $imap->examine($mailbox);
-
-        }
-        else {
-
-            $imap->select($mailbox);
-
-        }
+        $imap->examine($mailbox);
 
         my $message       = $imap->message_string($uid);
         my $idate         = $imap->internaldate($uid);
