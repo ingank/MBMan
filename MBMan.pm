@@ -412,7 +412,7 @@ sub fetch_message_infos
 
 sub fetch_message
   #
-  # Lese eine komplette Email-Nachricht.
+  # Übertrage genau eine Email-Nachricht vom IMAP-Server.
   #
   # Das Ergebnis wird als Referenz auf eine Hash-Struktur zurückgegeben.
   #
