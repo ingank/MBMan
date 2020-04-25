@@ -180,7 +180,7 @@ sub mailbox_info
 
         for my $folder ( @{$folders} ) {
 
-            my $fetch    = {};
+            my $fetchone = {};
             my @keys     = ();
             my $messages = 0;
             my $seen     = 0;
@@ -193,7 +193,7 @@ sub mailbox_info
 
             if ($messages) {
 
-                $fetch    = $imap->fetch_hash("FAST");
+                $fetchone = $imap->fetch_hash("FAST");
                 @keys     = keys %{$fetch};
                 $smallest = $fetch->{ $keys[0] }->{'RFC822.SIZE'};
 
@@ -283,7 +283,7 @@ sub get_messages_info
     my $args = {
         Modus      => 'Fast',
         Envelope   => 0,
-        DecodeMime => 0
+        Decodemime => 0
     };
 
     while (@_) {
@@ -292,8 +292,11 @@ sub get_messages_info
         $args->{$k} = $v if defined $v;
     }
 
-    my $imap = $self->{'Imap'};
-    my $data = {};
+    my $modus    = $args->{Modus};
+    my $envelope = $args->{Envelope};
+    my $decode   = $args->{Decodemime};
+    my $imap     = $self->{'Imap'};
+    my $data     = {};
 
     if ( $imap->IsAuthenticated ) {
 
@@ -323,32 +326,32 @@ sub get_messages_info
 
             if ($mcount) {
 
-                my $fast = $args->{Fast} && not $args->{All} && not $args->{Full};
-                my $all  = $args->{All}  && not $args->{Full};
-                my $full = $args->{Full};
+                my $fetchpack = undef;
+                my $fetchone  = undef;
 
-                my $fetch_data = undef;
-                my $fetch      = undef;
+                if ( $modus eq 'Fast' ) {
 
-                if ( $args->{Modus} eq 'Fast' ) {
-                    $fetch = $imap->fetch( 0, "FAST" );
+                    $fetchone = $imap->fetch( 0, "FAST" );
                     $args->{Hashenv} = 0;
-                }
 
-                if ( $args->{Modus} eq 'All' ) {
-                    $fetch = $imap->fetch( 0, "ALL" );
                 }
+                elsif ( $modus eq 'All' ) {
 
-                if ( $args->{Modus} eq 'Full' ) {
-                    $fetch = $imap->fetch( 0, "FULL" );
+                    $fetchone = $imap->fetch( 0, "ALL" );
+
+                }
+                elsif ( $modus eq 'Full' ) {
+
+                    $fetchone = $imap->fetch( 0, "FULL" );
+
                 }
 
                 my @indizes = 0 .. @{$fetch} - 1;
 
-                if ( $args->{Decodemime} ) {
-                    for (@indizes) {
-                        ${$fetch}[$_] = decode_mimewords( ${$fetch}[$_] );
-                    }
+                if ($decode) {
+
+                    for (@indizes) { ${$fetch}[$_] = decode_mimewords( ${$fetch}[$_] ); }
+
                 }
 
                 for (@indizes) { ${$fetch}[$_] =~ s/\r\n|\r|\n//g; }
@@ -373,7 +376,7 @@ sub get_messages_info
 
                 }
 
-                if ( $args->{Hashenv} ) {
+                if ($envelope) {
 
                     for (@indizes) {
 
@@ -389,7 +392,7 @@ sub get_messages_info
                         undef $bodyStructObj;
 
                         $package->{'INTERNAL_DATE'} = shift @internal_dates;
-                        push @{$fetch_data}, $package;
+                        push @{$fetchpack}, $package;
 
                     }
                 }
@@ -402,12 +405,12 @@ sub get_messages_info
                         $package->{'INTERNAL_DATE'} = shift @internal_dates;
                         $package->{'FETCH_STRING'}  = shift @{$fetch};
 
-                        push @{$fetch_data}, $package;
+                        push @{$fetchpack}, $package;
 
                     }
                 }
 
-                $data->{$folder}->{'FETCH_DATA'} = $fetch_data;
+                $data->{$folder}->{'FETCH_DATA'} = $fetchpack;
 
             }
         }
@@ -518,7 +521,7 @@ sub limit
         my $selproc    = \$imap->select;
         my ( $quota, $usage ) = &_get_quota_usage($imap);
 
-        if ( $args->{Modus} eq 'Percent' ) {
+        if ( $modus eq 'Percent' ) {
 
             $limit = $quota * $limit / 100;
 
