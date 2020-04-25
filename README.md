@@ -20,7 +20,7 @@ Ein IMAP-Mailboxmanager in Perl.
 * [RFC2971](https://tools.ietf.org/html/rfc2971)
   * IMAP4 ID extension
 
-## Fachausdrücke im Sinne der IMAP VERSION 4rev1
+## Fachbegriffe im Sinne der IMAP VERSION 4rev1
 
 * User / Nutzer
   * Ein menschlicher Benutzer.
@@ -29,7 +29,7 @@ Ein IMAP-Mailboxmanager in Perl.
 * User Account / Nutzerkonto
   * Eine Datenbank, die einer bestimmten Nutzerkennung zugeordnet ist. Die Datenbank besteht aus Mailboxen und diesen Mailboxen zugeordneten Nachrichten.
 * Mailbox
-  * Eine Mailbox kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden. Beachte: ein Wurzelordner ohne Namen ist nicht vorgesehen. Dementsprechend ist jede Nachricht einer bestimmten Mailbox zugeordnet. Es können untergeordnete Mailboxen erstellt und genutzt werden. Die Standard-Mailbox trägt den Namen *INBOX*.
+  * Eine Mailbox kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden. Beachte: eine Mailbox ohne Namen ist nicht vorgesehen. Dementsprechend ist jede Nachricht einer bestimmten Mailbox zugeordnet. Es können untergeordnete Mailboxen erstellt und genutzt werden. Die Standard-Mailbox trägt den Namen *INBOX*. Untergeordnete Mailboxen werden durch einen Punkt getrennt. Beispiel: *INBOX.Foo*
 * Connection / Verbindung
   * Eine IMAP4-Verbindung besteht aus Client-Server-Kommandos und Server-Client-Antworten. Sie besteht zeitlich gesehen direkt vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
 * Command / Befehl
