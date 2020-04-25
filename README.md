@@ -27,22 +27,35 @@ Ein IMAP-Mailboxmanager in Perl.
 * Username / Nutzerkennung
   * Eine dem IMAP-Server bekannte Zeichenfolge für einen Nutzer.
 * User Account / Nutzerkonto
-  * Eine Datenbank, die einer bestimmten Nutzerkennung zugeordnet ist. Die Datenbank besteht aus Mailboxen und diesen Mailboxen zugeordneten Nachrichten.
+  * Ein Nutzerkonto ist eine Datenbank, die einer bestimmten Nutzerkennung zugeordnet ist.
+  * Die Datenbank besteht aus Mailboxen und diesen Mailboxen zugeordneten Nachrichten.
 * Mailbox
-  * Eine Mailbox kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden. Beachte: eine Mailbox ohne Namen ist nicht vorgesehen. Dementsprechend ist jede Nachricht einer bestimmten Mailbox zugeordnet. Es können untergeordnete Mailboxen erstellt und genutzt werden. Die Standard-Mailbox trägt den Namen *INBOX*. Untergeordnete Mailboxen werden durch einen Punkt getrennt. Beispiel: *INBOX.Foo*
+  * Eine Mailbox kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden.
+  * Eine Mailbox ohne Namen ist nicht vorgesehen.
+  * Dementsprechend ist jede Nachricht einer bestimmten Mailbox zugeordnet.
+  * Es können untergeordnete Mailboxen erstellt und genutzt werden.
+  * Die Standard-Mailbox trägt den Namen *INBOX*.
+  * Untergeordnete Mailboxen werden durch einen Punkt getrennt. Beispiel: *INBOX.Foo*
 * Connection / Verbindung
-  * Eine IMAP4-Verbindung besteht aus Client-Server-Kommandos und Server-Client-Antworten. Sie besteht zeitlich gesehen direkt vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
+  * Eine IMAP4-Verbindung besteht aus Client-Server-Kommandos und Server-Client-Antworten.
+  * Sie besteht zeitlich gesehen direkt vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
 * Command / Befehl
   * Ein IMAP4-Befehl eines Clients an den Server.
 * Response / Antwort
   * Eine IMAP4-Antwort eines Servers an den Client.
 * State *of connection* / Zustand *der Verbindung*
   * Established / Verbunden
-    * konretisiert den Zustand einer stehenden **Verbindung** zwischen Client und Server. IMAP4-Befehle und Antworten können übermittelt werden.
+    * konretisiert den Zustand einer bestehenden **Verbindung** zwischen Client und Server.
+    * IMAP4-Befehle und Antworten können übermittelt werden.
   * Authenticated / Authentifiziert
-    * der Nutzer konnte sich gegenüber dem IMAP-Server identifizieren. (Erfolgreicher `LOGIN` oder `AUTHENTICATE` Befehl)
+    * der Nutzer konnte sich gegenüber dem IMAP-Server identifizieren.
+    * es wurde also ein erfolgreicher `LOGIN` oder `AUTHENTICATE` Befehl gesendet.
   * Selected / Angewählt
-    * Eine bestimmte Mailbox wurde angewählt. Wurde der Zustand 'Selected' mit Hilfe des Befehls `SELECT` herbeigeführt, kann auf Inhalte lesend und schreibend zugegriffen werden. Auf mit Hilfe des Befehls `EXAMINE` selektierte Mailboxen kann ausschließlich lesend zugegriffen werden.
+    * Eine bestimmte Mailbox wurde angewählt.
+    * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `SELECT` herbeigeführt:
+      * Auf die Mailbox kann lesend und schreibend zugegriffen werden.
+    * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `EXAMINE` herbeigeführt:
+      * Auf die Mailbox kann ausschließlich lesend zugegriffen werden.
 
 ## IMAP4 Implementationen
 * [RFCs Supported by Cyrus IMAP](https://github.com/cyrusimap/cyrus-imapd/blob/master/docsrc/imap/rfc-support.rst)
