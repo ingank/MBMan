@@ -16,12 +16,13 @@ use diagnostics;
 use feature qw(say);
 use Mail::IMAPClient;
 use Mail::IMAPClient::BodyStructure;
-use Mail::Header;
-use Email::Address;
-use Date::Manip;                      # Zeitangaben parsen
-use MIME::Words qw(:all);             # Mime decodieren
-use Digest::MD5::File qw(md5_hex);    # MD5 Prüfsummen erzeugen
-use Data::Structure::Util qw(unbless);
+
+#use Mail::Header;
+#use Email::Address;
+#use Date::Manip;                      # Zeitangaben parsen
+use MIME::Words qw(:all);                 # Mime decodieren
+use Digest::MD5::File qw(md5_hex);        # MD5 Prüfsummen erzeugen
+use Data::Structure::Util qw(unbless);    # Datenbasis eines Objektes extrahieren
 
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
@@ -179,7 +180,7 @@ sub mailbox_info
 
         for my $folder ( @{$folders} ) {
 
-            my $fetch    = {};
+            my $fetchone = {};
             my @keys     = ();
             my $messages = 0;
             my $seen     = 0;
@@ -192,7 +193,7 @@ sub mailbox_info
 
             if ($messages) {
 
-                $fetch    = $imap->fetch_hash("FAST");
+                $fetchone = $imap->fetch_hash("FAST");
                 @keys     = keys %{$fetch};
                 $smallest = $fetch->{ $keys[0] }->{'RFC822.SIZE'};
 
@@ -252,35 +253,37 @@ sub mailbox_info
 
 }
 
-sub fetch_message_infos
+sub get_messages_info
   #
-  # Usage: $foo = &fetch_message_infos(@args);
+  # Anwendung: $foo = &get_messages_info(@args);
   #
-  # Ermittle Informationen über alle Mails aller Ordner in einer Mailbox.
+  # Ermittle Informationen über alle Mails aller Mailboxen eines Nutzerkontos.
   #
-  # Übergib anschließend die ermittelten Daten
-  # als referenzierten Hash an $foo.
+  # Übergib anschließend die ermittelten Daten als referenzierten Hash an $foo.
   #
   # Ohne Argumente wird der IMAP-Befehl 'FETCH FAST' ausgeführt.
   #
   # Das Argument Modus => 'Fast' bestimmt explizit 'FETCH FAST'.
   # Das Argument Modus => 'All' führt stattdessen 'FETCH ALL' aus.
   # Das Argument Modus => 'Full' führt stattdessen 'FETCH FULL' aus.
-  # Der Schalter HashEnv => 1 gibt ENVELOPE-Daten zusätzlich in einem Hash zurück.
-  # Der Schalter DecodeMime => 1 gibt MIME-dekodierte Daten zurück.
+  #
+  # Der Schalter Envelope => 1 gibt zusätzlich ENVELOPE-Daten zurück.
+  #
+  # Der Schalter DecodeMime => 1 MIME-dekodiert alle empfangenen Daten.
   #
   # Beachte Folgendes:
   #
   # ** 'ENVELOPE' macht nur mit 'FETCH ALL' und 'FETCH FULL' wirklich Sinn.
-  # **  Der Schalter 'HashEnv' kann die Rechenzeit erheblich beeinflussen.
-  # **  Je nach Größe der Mailbox solltest Du dich von 'Fast' über 'All' nach 'Full' vorarbeiten.
+  # ** 'ENVELOPE' kann die Wartezeiten erheblich verlängern.
+  # **  Je nach Größe des Nutzeraccounts auf dem IMAP4-Server,
+  #     solltest Du dich von 'Fast' über 'All' nach 'Full' vorarbeiten.
   #
 {
     my $self = shift;
     my $args = {
         Modus      => 'Fast',
-        Hashenv    => 0,
-        Decodemime => 0,
+        Envelope   => 0,
+        Decodemime => 0
     };
 
     while (@_) {
@@ -289,8 +292,11 @@ sub fetch_message_infos
         $args->{$k} = $v if defined $v;
     }
 
-    my $imap = $self->{'Imap'};
-    my $ret  = {};
+    my $modus    = $args->{Modus};
+    my $envelope = $args->{Envelope};
+    my $decode   = $args->{Decodemime};
+    my $imap     = $self->{'Imap'};
+    my $data     = {};
 
     if ( $imap->IsAuthenticated ) {
 
@@ -314,43 +320,44 @@ sub fetch_message_infos
 
             my $search = $imap->search("ALL");
             my $mcount = @{$search};
-            $ret->{$folder}->{'MESSAGES'} = $mcount;
-            $ret->{$folder}->{'SEARCH'}   = $search;
+
+            $data->{$folder}->{'MESSAGES'} = $mcount;
+            $data->{$folder}->{'SEARCH'}   = $search;
 
             if ($mcount) {
 
-                my $fast = $args->{Fast} && not $args->{All} && not $args->{Full};
-                my $all  = $args->{All}  && not $args->{Full};
-                my $full = $args->{Full};
+                my $fetchpack = undef;
+                my $fetchone  = undef;
 
-                my $fetch_data = undef;
-                my $fetch      = undef;
+                if ( $modus eq 'Fast' ) {
 
-                if ( $args->{Modus} eq 'Fast' ) {
-                    $fetch = $imap->fetch( 0, "FAST" );
+                    $fetchone = $imap->fetch( 0, "FAST" );
                     $args->{Hashenv} = 0;
-                }
 
-                if ( $args->{Modus} eq 'All' ) {
-                    $fetch = $imap->fetch( 0, "ALL" );
                 }
+                elsif ( $modus eq 'All' ) {
 
-                if ( $args->{Modus} eq 'Full' ) {
-                    $fetch = $imap->fetch( 0, "FULL" );
+                    $fetchone = $imap->fetch( 0, "ALL" );
+
+                }
+                elsif ( $modus eq 'Full' ) {
+
+                    $fetchone = $imap->fetch( 0, "FULL" );
+
                 }
 
                 my @indizes = 0 .. @{$fetch} - 1;
 
-                if ( $args->{Decodemime} ) {
-                    for (@indizes) {
-                        ${$fetch}[$_] = decode_mimewords( ${$fetch}[$_] );
-                    }
+                if ($decode) {
+
+                    for (@indizes) { ${$fetch}[$_] = decode_mimewords( ${$fetch}[$_] ); }
+
                 }
 
                 for (@indizes) { ${$fetch}[$_] =~ s/\r\n|\r|\n//g; }
 
-                $ret->{$folder}->{'FETCH_COMMAND'}  = shift @{$fetch};
-                $ret->{$folder}->{'FETCH_RESPONSE'} = pop @{$fetch};
+                $data->{$folder}->{'FETCH_COMMAND'}  = shift @{$fetch};
+                $data->{$folder}->{'FETCH_RESPONSE'} = pop @{$fetch};
 
                 pop @indizes;
                 pop @indizes;
@@ -369,20 +376,23 @@ sub fetch_message_infos
 
                 }
 
-                if ( $args->{Hashenv} ) {
+                if ($envelope) {
 
                     for (@indizes) {
 
                         my $package = undef;
                         my $string  = shift @{$fetch};
+
                         $package->{'FETCH_STRING'} = $string;
                         $string =~ s/^(.*)ENVELOPE/* 1 FETCH (ENVELOPE/;
-                        my $bso = Mail::IMAPClient::BodyStructure::Envelope->new($string);
-                        unbless $bso;
-                        $package->{'FETCH_ENVELOPE'} = $bso;
-                        undef $bso;
+
+                        my $bodyStructObj = Mail::IMAPClient::BodyStructure::Envelope->new($string);
+                        unbless $bodyStructObj;
+                        $package->{'FETCH_ENVELOPE'} = $bodyStructObj;
+                        undef $bodyStructObj;
+
                         $package->{'INTERNAL_DATE'} = shift @internal_dates;
-                        push @{$fetch_data}, $package;
+                        push @{$fetchpack}, $package;
 
                     }
                 }
@@ -395,18 +405,18 @@ sub fetch_message_infos
                         $package->{'INTERNAL_DATE'} = shift @internal_dates;
                         $package->{'FETCH_STRING'}  = shift @{$fetch};
 
-                        push @{$fetch_data}, $package;
+                        push @{$fetchpack}, $package;
 
                     }
                 }
 
-                $ret->{$folder}->{'FETCH_DATA'} = $fetch_data;
+                $data->{$folder}->{'FETCH_DATA'} = $fetchpack;
 
             }
         }
     }
 
-    return $ret;
+    return $data;
 
 }
 
@@ -511,7 +521,7 @@ sub limit
         my $selproc    = \$imap->select;
         my ( $quota, $usage ) = &_get_quota_usage($imap);
 
-        if ( $args->{Modus} eq 'Percent' ) {
+        if ( $modus eq 'Percent' ) {
 
             $limit = $quota * $limit / 100;
 
@@ -579,7 +589,7 @@ sub _clean_address
   # $foo = Emailadressen in der Form: 'Name1 foo@bar.baz (Kommentar), Name2 ...'
   #
 {
-    my $ret  = '';
+    my $data = '';
     my @addr = Email::Address->parse(shift);
 
     while ( $addr[0] ) {
@@ -588,18 +598,18 @@ sub _clean_address
         my $email   = $addr[0][1];
         my $comment = $addr[0][2];
 
-        if ($name)    { $ret .= "$name "; }
-        if ($email)   { $ret .= "<$email> "; }
-        if ($comment) { $ret .= "($comment) "; }
+        if ($name)    { $data .= "$name "; }
+        if ($email)   { $data .= "<$email> "; }
+        if ($comment) { $data .= "($comment) "; }
 
-        $ret = substr( $ret, 0, -1 );
-        $ret .= ", ";
+        $data = substr( $data, 0, -1 );
+        $data .= ", ";
 
         shift @addr;
     }
 
-    $ret = substr( $ret, 0, -2 );
-    return $ret;
+    $data = substr( $data, 0, -2 );
+    return $data;
 }
 
 sub _test {
