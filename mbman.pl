@@ -116,7 +116,7 @@ sub print_message_infos
     &connect;
     &login;
 
-    my $info = $mbman->fetch_message_infos( Modus => 'All', DecodeMime => 0, HashEnv => 1 );
+    my $info = $mbman->get_messages_info( Modus => 'Full', HashEnv => 1, DecodeMime => 1 );
     print Dumper ($info);
 
     &disconnect;
