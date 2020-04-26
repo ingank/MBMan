@@ -35,7 +35,7 @@ Ein IMAP-Mailboxmanager in Perl.
   * Dementsprechend ist jede Nachricht einer bestimmten Mailbox zugeordnet.
   * Es können untergeordnete Mailboxen erstellt und genutzt werden.
   * Die Standard-Mailbox trägt den Namen *INBOX*.
-  * Untergeordnete Mailboxen werden durch einen Punkt getrennt. Beispiel: *INBOX.Foo*
+  * Untergeordnete Mailboxen werden durch ein vom IMAP4-Server festgelegtes Zeichen getrennt. Beispiel: *INBOX.Foo*
 * Connection / Verbindung
   * Eine IMAP4-Verbindung besteht aus Client-Server-Kommandos und Server-Client-Antworten.
   * Sie besteht zeitlich gesehen direkt vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
