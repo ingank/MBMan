@@ -24,7 +24,7 @@
 
     use Data::Dumper;
 
-    $info = $mbman->get_mailbox_info;
+    $info = $mbman->get_server_info;
     print Dumper ($info);
 
     $info = $mbman->get_messages_info(

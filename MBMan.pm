@@ -426,7 +426,7 @@ sub get_messages_info
 
 sub fetch_message
   #
-  # Übertrage genau eine Email-Nachricht vom IMAP-Server.
+  # Hole genau eine Email-Nachricht vom IMAP-Server.
   #
   # Das Ergebnis wird als Referenz auf eine Hash-Struktur zurückgegeben.
   #
