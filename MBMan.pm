@@ -154,14 +154,15 @@ sub logout
 
 }
 
-sub mailbox_info
+sub get_server_info
   #
-  # Infos zum IMAP-Account sammeln
+  # Infos über den IMAP-Server und das (eventuell)
+  # angemeldete Nutzerkonto sammeln.
   #
 {
     my $self = shift;
     my $imap = $self->{Imap};
-    my $info = {};
+    my $data = {};
 
     if ( $imap->IsAuthenticated ) {
 
@@ -175,8 +176,8 @@ sub mailbox_info
         my $y             = 0;
 
         my $folders = $imap->folders;
-        $info->{Capabilities} = $imap->capability;
-        $info->{Folders}      = {};
+        $data->{Capabilities} = $imap->capability;
+        $data->{Folders}      = {};
 
         for my $folder ( @{$folders} ) {
 
@@ -218,38 +219,38 @@ sub mailbox_info
             $seen_accu     += $seen;
             $unseen_accu   += $unseen;
 
-            $info->{Folders}->{$folder}->{Usage}  = $usage;
-            $info->{Folders}->{$folder}->{Count}  = $messages;
-            $info->{Folders}->{$folder}->{Seen}   = $seen;
-            $info->{Folders}->{$folder}->{Unseen} = $unseen;
+            $data->{Folders}->{$folder}->{Usage}  = $usage;
+            $data->{Folders}->{$folder}->{Count}  = $messages;
+            $data->{Folders}->{$folder}->{Seen}   = $seen;
+            $data->{Folders}->{$folder}->{Unseen} = $unseen;
 
         }
 
         ( $x, $y ) = &_get_quota_usage($imap);
 
-        $info->{'01_Host'}         = $imap->{Server};
-        $info->{'02_User'}         = $imap->{User};
-        $info->{'03_Quota'}        = $x;
-        $info->{'04_RootUsage'}    = $y;
-        $info->{'05_RootUsage100'} = $y / $x * 100;
-        $info->{'06_AccuUsage'}    = $usage_accu;
-        $info->{'07_AccuUsage100'} = $usage_accu / $x * 100;
-        $info->{'08_UsageDiff'}    = $usage_accu - $y;
-        $info->{'09_MessageCount'} = $messages_accu;
-        $info->{'10_Seen'}         = $seen_accu;
-        $info->{'11_Unseen'}       = $unseen_accu;
-        $info->{'12_SmallestMail'} = $smallest;
-        $info->{'13_LargestMail'}  = $largest;
-        $info->{'14_AverageSize'}  = int( $usage_accu / $messages_accu );
+        $data->{'01_Host'}         = $imap->{Server};
+        $data->{'02_User'}         = $imap->{User};
+        $data->{'03_Quota'}        = $x;
+        $data->{'04_RootUsage'}    = $y;
+        $data->{'05_RootUsage100'} = $y / $x * 100;
+        $data->{'06_AccuUsage'}    = $usage_accu;
+        $data->{'07_AccuUsage100'} = $usage_accu / $x * 100;
+        $data->{'08_UsageDiff'}    = $usage_accu - $y;
+        $data->{'09_MessageCount'} = $messages_accu;
+        $data->{'10_Seen'}         = $seen_accu;
+        $data->{'11_Unseen'}       = $unseen_accu;
+        $data->{'12_SmallestMail'} = $smallest;
+        $data->{'13_LargestMail'}  = $largest;
+        $data->{'14_AverageSize'}  = int( $usage_accu / $messages_accu );
 
     }
     elsif ( $imap->IsConnected ) {
 
-        $info->{Capabilities} = $imap->capability;
+        $data->{Capabilities} = $imap->capability;
 
     }
 
-    return $info;
+    return $data;
 
 }
 
