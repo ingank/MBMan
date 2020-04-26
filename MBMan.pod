@@ -1,37 +1,37 @@
 
 =head1 NAME
  
-MBMan - Eine IMAP Mailboxmanagement API
+    MBMan - Eine IMAP Mailboxmanagement API
 
 =head1 ANWENDUNG
 
-use MBMan;
+    use MBMan;
 
-my $mbman = MBMan->new(
-    Debug     => 0,
-    Ssl       => 1,
-    Peek      => 1,
-    Uid       => 1,
-    Directory => '~/MBData'
-);
+    my $mbman = MBMan->new(
+        Debug     => 0,
+        Ssl       => 1,
+        Peek      => 1,
+        Uid       => 1,
+        Directory => '~/MBData'
+    );
 
-$mbman->connect( Server => 'server.tld' );
+    $mbman->connect( Server => 'server.tld' );
 
-$mbman->login(
-    User => 'user@domain.tld',
-    Password => 'pa$$w0rd'
-);
+    $mbman->login(
+        User => 'user@domain.tld',
+        Password => 'pa$$w0rd'
+    );
 
-my $sinfo = $mbman->get_server_info();
+    my $sinfo = $mbman->get_server_info();
 
-my $minfo = $mbman->get_messages_info(
-    Modus => 'Full',
-    HashEnv => 1,
-    DecodeMime => 1
-);
+    my $minfo = $mbman->get_messages_info(
+        Modus => 'Full',
+        HashEnv => 1,
+        DecodeMime => 1
+    );
 
-$mbman->logout();
+    $mbman->logout();
 
-use Data::Dumper;
-print Dumper ($sinfo);
-print Dumper ($minfo);
+    use Data::Dumper;
+    print Dumper ($sinfo);
+    print Dumper ($minfo);
