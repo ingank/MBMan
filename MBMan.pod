@@ -33,3 +33,5 @@
         DecodeMime => 1
     );
     print Dumper ($info);
+
+    $mbman->logout() || die;
