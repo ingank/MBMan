@@ -159,6 +159,9 @@ sub get_server_info
   # Infos über den IMAP-Server und das (eventuell)
   # angemeldete Nutzerkonto sammeln.
   #
+  # TODO: Server und Konto sollten eventuell in getrennten Methoden
+  #       behandelt werden.
+  #
 {
     my $self = shift;
     my $imap = $self->{Imap};
