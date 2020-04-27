@@ -1,7 +1,7 @@
 
 =head1 NAME
  
-    MBMan - Eine IMAP Mailboxmanagement API
+    MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
 =head1 ANWENDUNG
 
