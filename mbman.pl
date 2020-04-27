@@ -44,7 +44,7 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hvcls');
+        getopts('S:U:P:hvclsa');
         $opt_h and do { &print_help(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
@@ -71,8 +71,6 @@ sub connect {
     if ($opt_S) {
 
         $mbman->connect( Server => $opt_S );
-
-        #     print Dumper $mbman;
 
     }
 
