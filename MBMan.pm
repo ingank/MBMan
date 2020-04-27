@@ -257,6 +257,31 @@ sub get_server_info
 
 }
 
+sub get_account_info
+  #
+  # Ermittle Infos über das aktuelle Nutzerkonto
+  #
+  # Diese Methode gibt Antwort auf folgende Fragen:
+  #
+  # - Auf welche Mailboxen hat der Nutzer Zugriff?
+  # - Welches ist das auf diesem Server gültige Trennzeichen für untergeordnete Mailboxen?
+  # - Welche Möglichkeiten (Capabilities) bietet der Server auf Nutzerebene?
+  # - Wieviel Speicherplatz (Quota) bietet dieses Nutzerkonto?
+  # - Wieviel Speicherplatz wird durch Nachrichten belegt?
+  # - Wie ist die statistische Belegung der einzelnen Mailboxen?
+  #
+{
+
+    my $self = shift;
+    my $imap = $self->{Imap};
+    my $data = {};
+
+    if ( $imap->IsAuthenticated ) {
+
+    }
+
+}
+
 sub get_messages_info
   #
   # Anwendung: $foo = &get_messages_info(@args);
