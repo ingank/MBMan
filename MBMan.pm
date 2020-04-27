@@ -102,7 +102,7 @@ sub connect
 
 sub login
   #
-  # User-Login auf einem IMAP-Server durchführen
+  # User-Login auf einem IMAP-Server durchführen.
   #
 {
 
@@ -156,13 +156,38 @@ sub logout
 
 sub get_server_info
   #
-  # Infos über den IMAP-Server und das (eventuell)
-  # angemeldete Nutzerkonto sammeln.
-  #
-  # TODO: Server und Konto sollten eventuell in getrennten Methoden
-  #       behandelt werden.
+  # Ermittle die Möglichkeiten (Capabilities) im CONNECTED-State des IMAP-Servers.
   #
 {
+    my $self = shift;
+    my $imap = $self->{Imap};
+    my $data = {};
+
+    if ( $imap->IsConnected ) {
+
+        $data->{Capabilities} = $imap->capability;
+
+    }
+
+    return $data;
+
+}
+
+sub get_account_info
+  #
+  # Ermittle Infos über das aktuelle Nutzerkonto.
+  #
+  # Diese Methode gibt Antwort auf folgende Fragen:
+  #
+  # - Auf welche Mailboxen hat der Nutzer Zugriff?
+  # - Welches ist das auf diesem Server gültige Trennzeichen für untergeordnete Mailboxen?
+  # - Welche Möglichkeiten (Capabilities) bietet der Server auf Nutzerebene?
+  # - Wieviel Speicherplatz (Quota) bietet dieses Nutzerkonto?
+  # - Wieviel Speicherplatz wird durch Nachrichten belegt?
+  # - Wie ist die statistische Belegung der einzelnen Mailboxen?
+  #
+{
+
     my $self = shift;
     my $imap = $self->{Imap};
     my $data = {};
@@ -247,38 +272,8 @@ sub get_server_info
         $data->{'14_AverageSize'}  = int( $usage_accu / $messages_accu );
 
     }
-    elsif ( $imap->IsConnected ) {
-
-        $data->{Capabilities} = $imap->capability;
-
-    }
 
     return $data;
-
-}
-
-sub get_account_info
-  #
-  # Ermittle Infos über das aktuelle Nutzerkonto
-  #
-  # Diese Methode gibt Antwort auf folgende Fragen:
-  #
-  # - Auf welche Mailboxen hat der Nutzer Zugriff?
-  # - Welches ist das auf diesem Server gültige Trennzeichen für untergeordnete Mailboxen?
-  # - Welche Möglichkeiten (Capabilities) bietet der Server auf Nutzerebene?
-  # - Wieviel Speicherplatz (Quota) bietet dieses Nutzerkonto?
-  # - Wieviel Speicherplatz wird durch Nachrichten belegt?
-  # - Wie ist die statistische Belegung der einzelnen Mailboxen?
-  #
-{
-
-    my $self = shift;
-    my $imap = $self->{Imap};
-    my $data = {};
-
-    if ( $imap->IsAuthenticated ) {
-
-    }
 
 }
 
