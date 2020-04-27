@@ -118,7 +118,6 @@ sub login
 {
 
     my $self = shift;
-    my $imap = $self->{Imap};
 
     while (@_) {
 
@@ -128,14 +127,24 @@ sub login
 
     }
 
-    return 0 if not $self->{User};
-    return 0 if not $self->{Password};
+    my $imap = $self->{Imap};
+    my $user = $self->{User} // 0;
+    my $pass = $self->{Password} // 0;
+    my $data = undef;
+
+    return 0 if not $user;
+    return 0 if not $pass;
 
     if ( $imap->IsConnected ) {
 
         $imap->User( $self->{User} );
         $imap->Password( $self->{Password} );
-        $imap->login || die;
+        $imap->login;
+
+        return 0 if not $imap->IsAuthenticated;
+
+        $data = $imap->capability;
+        $self->{'LoginCapability'} = $data;
 
     }
 
