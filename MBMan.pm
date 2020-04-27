@@ -184,8 +184,9 @@ sub get_server_info
 
     if ( $imap->IsConnected ) {
 
-        $data->{InitResponse}   = $self->{InitResponse};
-        $data->{InitCapability} = $self->{InitCapability};
+        $data->{InitResponse}    = $self->{InitResponse}    if exists $self->{InitResponse};
+        $data->{InitCapability}  = $self->{InitCapability}  if exists $self->{InitCapability};
+        $data->{LoginCapability} = $self->{LoginCapability} if exists $self->{LoginCapability};
 
     }
 
