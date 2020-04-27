@@ -174,8 +174,15 @@ sub get_server_info
   # BESCHREIBUNG
   #
   # Übergib folgende Daten als referenzierten Hash an $foo:
-  # ** InitResponse   => Erste Serverantwort im `Connected State` in der Rohform
-  # ** InitCapability => Server-Capability im `Connected State`
+  #
+  # ** InitResponse    => Erste Serverantwort im `Connected State` in der Rohform
+  # ** InitCapability  => Server-Capability im `Connected State`
+  # ** LoginCapability => Server-Capability im `Authenticated State`
+  #
+  # BEACHTE
+  #
+  # ** wenn keine Verbindung besteht, wird `undef` zurückgegeben.
+  # ** LoginCapability setzt den Zustand `Authenticated` voraus.
   #
 {
     my $self = shift;
