@@ -77,7 +77,6 @@ sub connect
 {
 
     my $self = shift;
-    my $imap = $self->{Imap};
 
     while (@_) {
 
@@ -87,12 +86,25 @@ sub connect
 
     }
 
-    return 0 if not $self->{Server};
+    my $imap   = $self->{Imap};
+    my $server = $self->{Server} // 0;
+    my $data   = undef;
+
+    return 0 if not $server;
 
     if ( not $imap->IsConnected ) {
 
-        $imap->Server( $self->{Server} );
-        $imap->connect || die;
+        $imap->Server($server);
+        $imap->connect;
+
+        return 0 if $imap->IsUnconnected;
+
+        $data = $imap->LastIMAPCommand;
+        $data =~ s/\r\n|\r|\n//g;
+        $self->{'InitResponse'} = $data;
+
+        $data = $imap->capability;
+        $self->{'InitCapability'} = $data;
 
     }
 
@@ -156,16 +168,25 @@ sub logout
 
 sub get_server_info
   #
-  # Ermittle die Möglichkeiten (Capabilities) im CONNECTED-State des IMAP-Servers.
+  # ANWENDUNG
+  #
+  # my $foo = $mbman->get_server_info();
+  #
+  # BESCHREIBUNG
+  #
+  # Übergib folgende Daten als referenzierten Hash an $foo:
+  # ** InitResponse   => Erste Serverantwort im `Connected State` in der Rohform
+  # ** InitCapability => Server-Capability im `Connected State`
   #
 {
     my $self = shift;
     my $imap = $self->{Imap};
-    my $data = {};
+    my $data = undef;
 
     if ( $imap->IsConnected ) {
 
-        $data->{Capabilities} = $imap->capability;
+        $data->{InitResponse}   = $self->{InitResponse};
+        $data->{InitCapability} = $self->{InitCapability};
 
     }
 
@@ -223,18 +244,18 @@ sub get_account_info
             if ($messages) {
 
                 $fetchone = $imap->fetch_hash("FAST");
-                @keys     = keys %{$fetch};
-                $smallest = $fetch->{ $keys[0] }->{'RFC822.SIZE'};
+                @keys     = keys %{$fetchone};
+                $smallest = $fetchone->{ $keys[0] }->{'RFC822.SIZE'};
 
             }
 
             for my $key (@keys) {
 
-                if ( index( $fetch->{$key}->{'FLAGS'}, '\\Seen' ) != -1 ) {
+                if ( index( $fetchone->{$key}->{'FLAGS'}, '\\Seen' ) != -1 ) {
                     $seen++;
                 }
 
-                $size = $fetch->{$key}->{'RFC822.SIZE'};
+                $size = $fetchone->{$key}->{'RFC822.SIZE'};
                 $usage += $size;
                 if ( $size < $smallest ) { $smallest = $size }
                 if ( $size > $largest )  { $largest  = $size }
@@ -370,18 +391,18 @@ sub get_messages_info
 
                 }
 
-                my @indizes = 0 .. @{$fetch} - 1;
+                my @indizes = 0 .. @{$fetchone} - 1;
 
                 if ($decode) {
 
-                    for (@indizes) { ${$fetch}[$_] = decode_mimewords( ${$fetch}[$_] ); }
+                    for (@indizes) { ${$fetchone}[$_] = decode_mimewords( ${$fetchone}[$_] ); }
 
                 }
 
-                for (@indizes) { ${$fetch}[$_] =~ s/\r\n|\r|\n//g; }
+                for (@indizes) { ${$fetchone}[$_] =~ s/\r\n|\r|\n//g; }
 
-                $data->{$folder}->{'FETCH_COMMAND'}  = shift @{$fetch};
-                $data->{$folder}->{'FETCH_RESPONSE'} = pop @{$fetch};
+                $data->{$folder}->{'FETCH_COMMAND'}  = shift @{$fetchone};
+                $data->{$folder}->{'FETCH_RESPONSE'} = pop @{$fetchone};
 
                 pop @indizes;
                 pop @indizes;
@@ -392,7 +413,7 @@ sub get_messages_info
 
                     my $date = undef;
 
-                    if ( ${$fetch}[$_] =~ /FETCH \(INTERNALDATE \"(.*)\" RFC822\.SIZE/ ) {
+                    if ( ${$fetchone}[$_] =~ /FETCH \(INTERNALDATE \"(.*)\" RFC822\.SIZE/ ) {
                         $date = $1;
                     }
 
@@ -405,7 +426,7 @@ sub get_messages_info
                     for (@indizes) {
 
                         my $package = undef;
-                        my $string  = shift @{$fetch};
+                        my $string  = shift @{$fetchone};
 
                         $package->{'FETCH_STRING'} = $string;
                         $string =~ s/^(.*)ENVELOPE/* 1 FETCH (ENVELOPE/;
@@ -427,7 +448,7 @@ sub get_messages_info
                         my $package = undef;
 
                         $package->{'INTERNAL_DATE'} = shift @internal_dates;
-                        $package->{'FETCH_STRING'}  = shift @{$fetch};
+                        $package->{'FETCH_STRING'}  = shift @{$fetchone};
 
                         push @{$fetchpack}, $package;
 
@@ -537,6 +558,7 @@ sub limit
     }
 
     my $limit = $args->{Limit};
+    my $modus = $args->{Modus};
 
     if ( $imap->IsAuthenticated ) {
 

@@ -29,10 +29,11 @@ our $opt_U = '';
 our $opt_P = '';
 our $opt_h = 0;
 our $opt_v = 0;    # verbose
-our $opt_i = 0;    # mailbox-info
-our $opt_l = 0;    # message-infos
-our $opt_s = 0;
-our $opt_t = 0;    # test
+our $opt_c = 0;    # connect
+our $opt_l = 0;    # login
+our $opt_s = 0;    # server-info
+our $opt_a = 0;    # account-info
+our $opt_m = 0;    # messages-info
 our $opt_f = 0;    # fetch message
 
 our $mbman = undef;
@@ -43,21 +44,24 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hvilstf');
+        getopts('S:U:P:hvcls');
         $opt_h and do { &print_help(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
 
-        $opt_i and do { &print_mailbox_info;  return 1 };
-        $opt_l and do { &print_message_infos; return 1 };
-        $opt_f and do { &fetch_message;       return 1 };
+        $opt_c and do { &connect };
+        $opt_l and do { &login };
+        $opt_s and do { &print_server_info };
+        $opt_a and do { &print_account_info };
+        $opt_m and do { &print_messages_infos };
+        $opt_f and do { &fetch_message };
 
-        &print_info(0);
+        &disconnect;
         return 0;
 
     }
 
-    &print_info(1);
+    print_info(1);
     return 0;
 
 }
@@ -67,6 +71,8 @@ sub connect {
     if ($opt_S) {
 
         $mbman->connect( Server => $opt_S );
+
+        #     print Dumper $mbman;
 
     }
 
@@ -87,39 +93,40 @@ sub login {
 
 sub disconnect {
 
-    $mbman->logout;
+    $mbman->logout();
 
 }
 
-sub print_mailbox_info
+sub print_server_info
+  #
+  # Allgemeine Infos über den IMAP-Server ermitteln und ausgeben.
+  #
+{
+
+    my $info = $mbman->get_server_info;
+    print Dumper ($info);
+
+}
+
+sub print_account_info
+  #
+  # Allgemeine Infos über den IMAP-Server-Account ermitteln und ausgeben.
+  #
+{
+
+    my $info = $mbman->get_account_info;
+    print Dumper ($info);
+
+}
+
+sub print_messages_info
   #
   # Allgemeine Infos über das IMAP-Postfach ermitteln und ausgeben.
   #
 {
 
-    &connect;
-    &login;
-
-    my $info = $mbman->mailbox_info;
-    print Dumper ($info);
-
-    &disconnect;
-
-}
-
-sub print_message_infos
-  #
-  #
-  #
-{
-
-    &connect;
-    &login;
-
     my $info = $mbman->get_messages_info( Modus => 'Full', HashEnv => 1, DecodeMime => 1 );
     print Dumper ($info);
-
-    &disconnect;
 
 }
 
@@ -129,13 +136,8 @@ sub fetch_message
   #
 {
 
-    &connect;
-    &login;
-
     my $message = $mbman->fetch_message( Uid => '644', ReadOnly => 0 );
     print Dumper ($message);
-
-    &disconnect;
 
 }
 
