@@ -155,9 +155,6 @@ sub login
 sub logout
   #
   # Implementiert das LOGOUT IMAP Client Kommando
-  # Die Objektdaten bleiben bestehen, solange das Objekt besteht.
-  # Es kann beispielsweise mit den gleichen Zugangsdaten wieder eine Verbindung
-  # zum IMAP-Server aufgebaut und der Login ausgeführt werden.
   #
 {
 
@@ -183,7 +180,7 @@ sub get_server_info
   #
   # Übergib folgende Daten als referenzierten Hash an $foo:
   #
-  # ** InitResponse    => Erste Serverantwort im `Connected State` in der Rohform
+  # ** InitResponse    => Erste Serverantwort im `Connected State` (Rohform)
   # ** InitCapability  => Server-Capability im `Connected State`
   # ** LoginCapability => Server-Capability im `Authenticated State`
   #
