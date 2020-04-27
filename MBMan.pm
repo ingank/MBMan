@@ -188,6 +188,8 @@ sub get_server_info
   #
   # ** wenn keine Verbindung besteht, wird `undef` zurückgegeben.
   # ** LoginCapability setzt den Zustand `Authenticated` voraus.
+  # ** Die Daten werden aus dem internen Cache aggregiert,
+  #    ein expliziter IMAP-Befehl wird deshalb nicht ausgeführt.
   #
 {
     my $self = shift;
@@ -208,22 +210,23 @@ sub get_server_info
 
 sub get_account_info
   #
-  # Ermittle Infos über das aktuelle Nutzerkonto.
+  # ANWENDUNG
   #
-  # Diese Methode gibt Antwort auf folgende Fragen:
+  # my $foo = $mbman->get_account_info();
   #
-  # - Auf welche Mailboxen hat der Nutzer Zugriff?
-  # - Welches ist das auf diesem Server gültige Trennzeichen für untergeordnete Mailboxen?
-  # - Welche Möglichkeiten (Capabilities) bietet der Server auf Nutzerebene?
-  # - Wieviel Speicherplatz (Quota) bietet dieses Nutzerkonto?
-  # - Wieviel Speicherplatz wird durch Nachrichten belegt?
-  # - Wie ist die statistische Belegung der einzelnen Mailboxen?
+  # BESCHREIBUNG
+  #
+  # Übergib folgende Daten als referenzierten Hash an $foo:
+  #
+  # ** Alle vom Nutzer erreichbaren Mailboxen.
+  # ** Pro Mailbox eine grundlegende Nutzungsstatistik.
+  # ** Quota und Belegung (serverseitig und berechnet).
   #
 {
 
     my $self = shift;
     my $imap = $self->{Imap};
-    my $data = {};
+    my $data = undef;
 
     if ( $imap->IsAuthenticated ) {
 
