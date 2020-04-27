@@ -1,8 +1,7 @@
 #
-#
 # MBMan.pm
 #
-# Administrative Tätigkeiten an IMAP-Mailboxen durchführen.
+# MBMan - Eine IMAP Mailboxmanagement API.
 #
 
 package MBMan;
