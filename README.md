@@ -1,5 +1,5 @@
 # MBMan
-Ein IMAP-Mailboxmanager in Perl.
+MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
 ## RFCs zum IMAP4-Protokoll
 * [RFC1730](https://tools.ietf.org/html/rfc1730) 
