@@ -155,13 +155,12 @@ sub logout
     my $self = shift;
     my $imap = $self->{Imap};
 
-    if ( $imap->IsConnected ) {
+    return 1 if $imap->IsUnconnected;
 
-        $imap->logout || die;
+    $imap->logout;
 
-    }
-
-    return 1;
+    return 1 if $imap->IsUnconnected;
+    return 0;
 
 }
 
