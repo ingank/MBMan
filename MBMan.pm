@@ -91,7 +91,7 @@ sub connect
 
     return 0 if not $server;
 
-    if ( not $imap->IsConnected ) {
+    if ( $imap->IsUnconnected ) {
 
         $imap->Server($server);
         $imap->connect;
