@@ -103,6 +103,7 @@ sub print_server_info
 
     my $info = $mbman->get_server_info;
     print Dumper ($info);
+    print Dumper ($mbman);
 
 }
 

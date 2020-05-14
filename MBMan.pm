@@ -105,6 +105,9 @@ sub connect
         $data = $imap->capability;
         $self->{'InitCapability'} = $data;
 
+        $data = $imap->tag_and_run('ID NIL');
+        $self->{'ServerID'} = $data;
+
     }
 
     return 1;
