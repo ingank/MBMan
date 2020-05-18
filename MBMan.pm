@@ -256,8 +256,9 @@ sub get_account_info
             my $size     = 0;
 
             $imap->examine($folder);
-            my $last = $imap->Results;
-            for ( 0 .. @{$last} - 1 ) { ${$last}[$_] =~ s/(\r\n|\r|\n)$//; }
+            my $examine = $imap->Results;
+            for ( 0 .. @{$examine} - 1 ) { ${$examine}[$_] =~ s/(\r\n|\r|\n)$//; }
+
             $messages = $imap->message_count();
 
             if ($messages) {
@@ -291,7 +292,7 @@ sub get_account_info
             $data->{Folders}->{$folder}->{Count}   = $messages;
             $data->{Folders}->{$folder}->{Seen}    = $seen;
             $data->{Folders}->{$folder}->{Unseen}  = $unseen;
-            $data->{Folders}->{$folder}->{Command} = $last;
+            $data->{Folders}->{$folder}->{Examine} = $examine;
 
         }
 
