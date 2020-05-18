@@ -6,6 +6,7 @@
 =head1 ANWENDUNG
 
     use MBMan;
+    use Data::Dumper;
 
     my $mbman = MBMan->new(
         Debug     => 0,
@@ -24,14 +25,14 @@
 
     my $sinfo = $mbman->get_server_info();
 
+    print Dumper ($sinfo);
+
     my $minfo = $mbman->get_messages_info(
         Modus => 'Full',
         HashEnv => 1,
         DecodeMime => 1
     );
 
-    $mbman->logout();
-
-    use Data::Dumper;
-    print Dumper ($sinfo);
     print Dumper ($minfo);
+
+    $mbman->logout();
