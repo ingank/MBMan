@@ -237,14 +237,14 @@ sub get_account_info
 
     if ( $imap->IsAuthenticated ) {
 
-        my $usage_accu    = 0;
-        my $messages_accu = 0;
-        my $seen_accu     = 0;
-        my $unseen_accu   = 0;
-        my $smallest      = 0;
-        my $largest       = 0;
-        my $x             = 0;
-        my $y             = 0;
+        my $usage_accu  = 0;
+        my $exists_accu = 0;
+        my $seen_accu   = 0;
+        my $unseen_accu = 0;
+        my $smallest    = 0;
+        my $largest     = 0;
+        my $x           = 0;
+        my $y           = 0;
 
         my $folders = $imap->folders;
         $data->{Folders} = {};
@@ -253,7 +253,7 @@ sub get_account_info
 
             my $fetchone = {};
             my @keys     = ();
-            my $messages = 0;
+            my $exists   = 0;
             my $seen     = 0;
             my $unseen   = 0;
             my $usage    = 0;
@@ -263,9 +263,9 @@ sub get_account_info
             my $examine = $imap->Results;
             for ( 0 .. @{$examine} - 1 ) { ${$examine}[$_] =~ s/(\r\n|\r|\n)$//; }
 
-            $messages = $imap->message_count();
+            $exists = $imap->message_count();
 
-            if ($messages) {
+            if ($exists) {
 
                 $fetchone = $imap->fetch_hash("FAST");
                 @keys     = keys %{$fetchone};
@@ -286,14 +286,14 @@ sub get_account_info
 
             }
 
-            $unseen = $messages - $seen;
-            $usage_accu    += $usage;
-            $messages_accu += $messages;
-            $seen_accu     += $seen;
-            $unseen_accu   += $unseen;
+            $unseen = $exists - $seen;
+            $usage_accu  += $usage;
+            $exists_accu += $exists;
+            $seen_accu   += $seen;
+            $unseen_accu += $unseen;
 
             $data->{Folders}->{$folder}->{Usage}   = $usage;
-            $data->{Folders}->{$folder}->{Count}   = $messages;
+            $data->{Folders}->{$folder}->{Count}   = $exists;
             $data->{Folders}->{$folder}->{Seen}    = $seen;
             $data->{Folders}->{$folder}->{Unseen}  = $unseen;
             $data->{Folders}->{$folder}->{Examine} = $examine;
@@ -310,12 +310,12 @@ sub get_account_info
         $data->{'06_AccuUsage'}    = $usage_accu;
         $data->{'07_AccuUsage100'} = $usage_accu / $x * 100;
         $data->{'08_UsageDiff'}    = $usage_accu - $y;
-        $data->{'09_MessageCount'} = $messages_accu;
+        $data->{'09_MessageCount'} = $exists_accu;
         $data->{'10_Seen'}         = $seen_accu;
         $data->{'11_Unseen'}       = $unseen_accu;
         $data->{'12_SmallestMail'} = $smallest;
         $data->{'13_LargestMail'}  = $largest;
-        $data->{'14_AverageSize'}  = int( $usage_accu / $messages_accu );
+        $data->{'14_AverageSize'}  = int( $usage_accu / $exists_accu );
 
     }
 
