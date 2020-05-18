@@ -65,6 +65,8 @@ sub new
 
     ) || die;
 
+    $self->{Col}->{'00_STATE'} = 'Disconnected';
+
     return $self;
 
 }
@@ -97,6 +99,8 @@ sub connect
         $imap->connect;
 
         return 0 if $imap->IsUnconnected;
+
+        $self->{Col}->{'00_STATE'} = 'Connected';
 
         $data = $imap->LastIMAPCommand;
         $data =~ s/\r\n|\r|\n//g;
