@@ -44,7 +44,7 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hvclsa');
+        getopts('S:U:P:hvclsamf');
         $opt_h and do { &print_help(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
@@ -103,7 +103,7 @@ sub print_server_info
 
     my $info = $mbman->get_server_info;
     print Dumper ($info);
-    print Dumper ($mbman);
+#    print Dumper ($mbman);
 
 }
 
