@@ -13,6 +13,7 @@ use warnings;
 use diagnostics;
 
 use feature qw(say);
+use Storable;
 use Mail::IMAPClient;
 use Mail::IMAPClient::BodyStructure;
 
