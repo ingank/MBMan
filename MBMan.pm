@@ -69,6 +69,7 @@ sub new
 
     ) || die;
 
+    $self->{Notes} = {};
     return $self;
 
 }
@@ -102,7 +103,7 @@ sub connect
 
     $data = $imap->LastIMAPCommand;
     $data =~ s/\r\n|\r|\n//g;
-    $notes->{'51_ServerCommand'} = $data;
+    $notes->{'51_ServerResponse'} = $data;
 
     $data = $imap->capability;
     $notes->{'52_ServerCapability'} = $data;
@@ -133,11 +134,11 @@ sub login
 
     my $imap  = $self->{Imap};
     my $notes = $self->{Notes};
-    my $user  = $self->{User} // 0;
-    my $pass  = $self->{Password} // 0;
+    my $user  = $self->{User};
+    my $pass  = $self->{Password};
     my $data  = undef;
 
-    return 1 unless $imap->IsAuthenticated;
+    return 1 if $imap->IsAuthenticated;
     return 0 unless $imap->IsConnected;
     return 0 unless $user;
     return 0 unless $pass;
@@ -150,10 +151,10 @@ sub login
 
     $data = $imap->LastIMAPCommand;
     $data =~ s/\r\n|\r|\n//g;
-    $notes->{'61_LoginCommand'} = $data;
+    $notes->{'61_LoginResponse'} = $data;
 
     $data = $imap->capability;
-    $self->{'62_LoginCapability'} = $data;
+    $notes->{'62_LoginCapability'} = $data;
 
     return 1;
 
@@ -577,7 +578,7 @@ sub limit
 
     my $args = {
 
-        Modus    => 'Percent',
+        Modus    => 'Percent',  # oder 'Absolute'
         Limit    => 80,
         Backup   => 1,
         TestMode => 1

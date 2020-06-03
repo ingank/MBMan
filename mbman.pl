@@ -49,7 +49,7 @@ sub main {
 
         $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
 
-        &print_status;
+        #&print_status;
 
         $opt_c and do { &connect };
         $opt_l and do { &login };
@@ -62,7 +62,7 @@ sub main {
 
         &disconnect;
 
-        &print_status;
+        #&print_status;
 
         return 0;
 
