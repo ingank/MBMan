@@ -49,6 +49,8 @@ sub main {
 
         $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
 
+        &print_status;
+
         $opt_c and do { &connect };
         $opt_l and do { &login };
         $opt_s and do { &print_server_info };
@@ -56,7 +58,12 @@ sub main {
         $opt_m and do { &print_messages_infos };
         $opt_f and do { &fetch_message };
 
+        &print_status;
+
         &disconnect;
+
+        &print_status;
+
         return 0;
 
     }
@@ -95,6 +102,13 @@ sub disconnect {
 
 }
 
+sub print_status {
+
+    my $ax = $mbman->info;
+    print Dumper $ax;
+
+}
+
 sub print_server_info
   #
   # Allgemeine Infos über den IMAP-Server ermitteln und ausgeben.
@@ -103,7 +117,8 @@ sub print_server_info
 
     my $info = $mbman->get_server_info;
     print Dumper ($info);
-#    print Dumper ($mbman);
+
+    #    print Dumper ($mbman);
 
 }
 
