@@ -574,11 +574,10 @@ sub limit
 {
 
     my $self = shift;
-    my $imap = $self->{Imap};
 
     my $args = {
 
-        Modus    => 'Percent',  # oder 'Absolute'
+        Modus    => 'Percent',    # oder 'Absolute'
         Limit    => 80,
         Backup   => 1,
         TestMode => 1
@@ -593,43 +592,43 @@ sub limit
 
     }
 
+    my $imap  = $self->{Imap};
     my $limit = $args->{Limit};
     my $modus = $args->{Modus};
 
-    if ( $imap->IsAuthenticated ) {
+    return 0 unless $imap->IsAuthenticated;
 
-        my @folder_sel = ();
-        my $folders    = $imap->folders;
-        my $selproc    = \$imap->select;
-        my ( $quota, $usage ) = &_get_quota_usage($imap);
+    my @folder_sel = ();
+    my $folders    = $imap->folders;
+    my $selproc    = \$imap->examine;
+    my ( $quota, $usage ) = &_get_quota_usage($imap);
 
-        if ( $modus eq 'Percent' ) {
+    if ( $modus eq 'Percent' ) {
 
-            $limit = $quota * $limit / 100;
-
-        }
-        if ( $args->{TestMode} ) {
-
-            $selproc = \$imap->examine;
-
-        }
-
-        for ( @{$folders} ) {
-
-            push @folder_sel, $_ if $_ eq 'Trash';
-            push @folder_sel, $_ if $_ eq 'INBOX';
-
-        }
-
-        for my $folder (@folder_sel) {
-
-            &{$selproc}($folder);
-
-        }
-
-        #  print "$quota ... $usage ... $limit";
+        $limit = $quota * $limit / 100;
 
     }
+
+    unless ( $args->{TestMode} ) {
+
+        $selproc = \$imap->select;
+
+    }
+
+    for ( @{$folders} ) {
+
+        push @folder_sel, $_ if $_ eq 'Trash';
+        push @folder_sel, $_ if $_ eq 'INBOX';
+
+    }
+
+    for my $folder (@folder_sel) {
+
+        &{$selproc}($folder);
+
+    }
+
+    #  print "$quota ... $usage ... $limit";
 
     return 1;
 
