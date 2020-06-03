@@ -69,8 +69,6 @@ sub new
 
     ) || die;
 
-    $self->{Col}->{'00_STATE'} = 'Disconnected';
-
     return $self;
 
 }
@@ -92,39 +90,34 @@ sub connect
     }
 
     my $imap   = $self->{Imap};
-    my $server = $self->{Server} // 0;
+    my $notes  = $self->{Notes};
+    my $server = $self->{Server};
     my $data   = undef;
 
-    return 0 if not $server;
+    return 1 if $imap->IsConnected;
+    return 0 unless $server;
 
-    if ( $imap->IsUnconnected ) {
+    $imap->Server($server);
+    $imap->connect || return 0;
 
-        $imap->Server($server);
-        $imap->connect;
+    $data = $imap->LastIMAPCommand;
+    $data =~ s/\r\n|\r|\n//g;
+    $notes->{'51_ServerCommand'} = $data;
 
-        return 0 if $imap->IsUnconnected;
+    $data = $imap->capability;
+    $notes->{'52_ServerCapability'} = $data;
 
-        $self->{Col}->{'00_STATE'} = 'Connected';
+    $data = $imap->tag_and_run('ID NIL');
+    $notes->{'53_ServerIDTag'} = $data;
 
-        $data = $imap->LastIMAPCommand;
-        $data =~ s/\r\n|\r|\n//g;
-        $self->{'InitResponse'} = $data;
-
-        $data = $imap->capability;
-        $self->{'InitCapability'} = $data;
-
-        $data = $imap->tag_and_run('ID NIL');
-        $self->{'ServerID'} = $data;
-
-    }
-
+    return 0 if $imap->IsUnconnected;
     return 1;
 
 }
 
 sub login
   #
-  # User-Login auf einem IMAP-Server durchführen.
+  # User-Login auf IMAP-Server
   #
 {
 
@@ -138,26 +131,29 @@ sub login
 
     }
 
-    my $imap = $self->{Imap};
-    my $user = $self->{User} // 0;
-    my $pass = $self->{Password} // 0;
-    my $data = undef;
+    my $imap  = $self->{Imap};
+    my $notes = $self->{Notes};
+    my $user  = $self->{User} // 0;
+    my $pass  = $self->{Password} // 0;
+    my $data  = undef;
 
-    return 0 if not $user;
-    return 0 if not $pass;
+    return 1 unless $imap->IsAuthenticated;
+    return 0 unless $imap->IsConnected;
+    return 0 unless $user;
+    return 0 unless $pass;
 
-    if ( $imap->IsConnected ) {
+    $imap->User( $self->{User} );
+    $imap->Password( $self->{Password} );
+    $imap->login;
 
-        $imap->User( $self->{User} );
-        $imap->Password( $self->{Password} );
-        $imap->login;
+    return 0 unless $imap->IsAuthenticated;
 
-        return 0 if not $imap->IsAuthenticated;
+    $data = $imap->LastIMAPCommand;
+    $data =~ s/\r\n|\r|\n//g;
+    $notes->{'61_LoginCommand'} = $data;
 
-        $data = $imap->capability;
-        $self->{'LoginCapability'} = $data;
-
-    }
+    $data = $imap->capability;
+    $self->{'62_LoginCapability'} = $data;
 
     return 1;
 
@@ -165,19 +161,32 @@ sub login
 
 sub logout
   #
-  # Implementiert das LOGOUT IMAP Client Kommando
+  # IMAP LOGOUT
+  #
+{
+
+    my $self  = shift;
+    my $imap  = $self->{Imap};
+    my $notes = $self->{Notes};
+
+    return 1 unless $imap->IsConnected;
+
+    $imap->logout;
+
+    return 0 if $imap->IsConnected;
+    return 1;
+
+}
+
+sub info
+  #
+  # Gib gesammelte Infos an den Hostprozess
   #
 {
 
     my $self = shift;
-    my $imap = $self->{Imap};
-
-    return 1 if $imap->IsUnconnected;
-
-    $imap->logout;
-
-    return 1 if $imap->IsUnconnected;
-    return 0;
+    my $data = Storable::dclone( $self->{Notes} );
+    return $data;
 
 }
 
@@ -231,7 +240,7 @@ sub get_account_info
   #
   # ** Alle vom Nutzer erreichbaren Mailboxen.
   # ** Pro Mailbox eine grundlegende Nutzungsstatistik.
-  # ** Quota und Belegung (serverseitig und berechnet).
+  # ** Quota und Belegung (serverseitig übermittelt und berechnet).
   #
 {
 
@@ -239,89 +248,87 @@ sub get_account_info
     my $imap = $self->{Imap};
     my $data = undef;
 
-    if ( $imap->IsAuthenticated ) {
+    return 0 unless $imap->IsAuthenticated;
 
-        my $usage_accu  = 0;
-        my $exists_accu = 0;
-        my $seen_accu   = 0;
-        my $unseen_accu = 0;
-        my $smallest    = 0;
-        my $largest     = 0;
-        my $x           = 0;
-        my $y           = 0;
+    my $usage_accu  = 0;
+    my $exists_accu = 0;
+    my $seen_accu   = 0;
+    my $unseen_accu = 0;
+    my $smallest    = 0;
+    my $largest     = 0;
+    my $x           = 0;
+    my $y           = 0;
 
-        my $folders = $imap->folders;
-        $data->{Folders} = {};
+    my $folders = $imap->folders;
+    $data->{Folders} = {};
 
-        for my $folder ( @{$folders} ) {
+    for my $folder ( @{$folders} ) {
 
-            my $fetchone = {};
-            my @keys     = ();
-            my $exists   = 0;
-            my $seen     = 0;
-            my $unseen   = 0;
-            my $usage    = 0;
-            my $size     = 0;
+        my $fetchone = {};
+        my @keys     = ();
+        my $exists   = 0;
+        my $seen     = 0;
+        my $unseen   = 0;
+        my $usage    = 0;
+        my $size     = 0;
 
-            $imap->examine($folder);
-            my $examine = $imap->Results;
-            for ( 0 .. @{$examine} - 1 ) { ${$examine}[$_] =~ s/(\r\n|\r|\n)$//; }
+        $imap->examine($folder);
+        my $examine = $imap->Results;
+        for ( 0 .. @{$examine} - 1 ) { ${$examine}[$_] =~ s/(\r\n|\r|\n)$//; }
 
-            $exists = $imap->message_count();
+        $exists = $imap->message_count();
 
-            if ($exists) {
+        if ($exists) {
 
-                $fetchone = $imap->fetch_hash("FAST");
-                @keys     = keys %{$fetchone};
-                $smallest = $fetchone->{ $keys[0] }->{'RFC822.SIZE'};
-
-            }
-
-            for my $key (@keys) {
-
-                if ( index( $fetchone->{$key}->{'FLAGS'}, '\\Seen' ) != -1 ) {
-                    $seen++;
-                }
-
-                $size = $fetchone->{$key}->{'RFC822.SIZE'};
-                $usage += $size;
-                if ( $size < $smallest ) { $smallest = $size }
-                if ( $size > $largest )  { $largest  = $size }
-
-            }
-
-            $unseen = $exists - $seen;
-            $usage_accu  += $usage;
-            $exists_accu += $exists;
-            $seen_accu   += $seen;
-            $unseen_accu += $unseen;
-
-            $data->{Folders}->{$folder}->{Usage}   = $usage;
-            $data->{Folders}->{$folder}->{Count}   = $exists;
-            $data->{Folders}->{$folder}->{Seen}    = $seen;
-            $data->{Folders}->{$folder}->{Unseen}  = $unseen;
-            $data->{Folders}->{$folder}->{Examine} = $examine;
+            $fetchone = $imap->fetch_hash("FAST");
+            @keys     = keys %{$fetchone};
+            $smallest = $fetchone->{ $keys[0] }->{'RFC822.SIZE'};
 
         }
 
-        ( $x, $y ) = &_get_quota_usage($imap);
+        for my $key (@keys) {
 
-        $data->{'01_Host'}         = $imap->{Server};
-        $data->{'02_User'}         = $imap->{User};
-        $data->{'03_Quota'}        = $x;
-        $data->{'04_RootUsage'}    = $y;
-        $data->{'05_RootUsage100'} = $y / $x * 100;
-        $data->{'06_AccuUsage'}    = $usage_accu;
-        $data->{'07_AccuUsage100'} = $usage_accu / $x * 100;
-        $data->{'08_UsageDiff'}    = $usage_accu - $y;
-        $data->{'09_MessageCount'} = $exists_accu;
-        $data->{'10_Seen'}         = $seen_accu;
-        $data->{'11_Unseen'}       = $unseen_accu;
-        $data->{'12_SmallestMail'} = $smallest;
-        $data->{'13_LargestMail'}  = $largest;
-        $data->{'14_AverageSize'}  = int( $usage_accu / $exists_accu );
+            if ( index( $fetchone->{$key}->{'FLAGS'}, '\\Seen' ) != -1 ) {
+                $seen++;
+            }
+
+            $size = $fetchone->{$key}->{'RFC822.SIZE'};
+            $usage += $size;
+            if ( $size < $smallest ) { $smallest = $size }
+            if ( $size > $largest )  { $largest  = $size }
+
+        }
+
+        $unseen = $exists - $seen;
+        $usage_accu  += $usage;
+        $exists_accu += $exists;
+        $seen_accu   += $seen;
+        $unseen_accu += $unseen;
+
+        $data->{Folders}->{$folder}->{Usage}   = $usage;
+        $data->{Folders}->{$folder}->{Count}   = $exists;
+        $data->{Folders}->{$folder}->{Seen}    = $seen;
+        $data->{Folders}->{$folder}->{Unseen}  = $unseen;
+        $data->{Folders}->{$folder}->{Examine} = $examine;
 
     }
+
+    ( $x, $y ) = &_get_quota_usage($imap);
+
+    $data->{'01_Host'}         = $imap->{Server};
+    $data->{'02_User'}         = $imap->{User};
+    $data->{'03_Quota'}        = $x;
+    $data->{'04_RootUsage'}    = $y;
+    $data->{'05_RootUsage100'} = $y / $x * 100;
+    $data->{'06_AccuUsage'}    = $usage_accu;
+    $data->{'07_AccuUsage100'} = $usage_accu / $x * 100;
+    $data->{'08_UsageDiff'}    = $usage_accu - $y;
+    $data->{'09_MessageCount'} = $exists_accu;
+    $data->{'10_Seen'}         = $seen_accu;
+    $data->{'11_Unseen'}       = $unseen_accu;
+    $data->{'12_SmallestMail'} = $smallest;
+    $data->{'13_LargestMail'}  = $largest;
+    $data->{'14_AverageSize'}  = int( $usage_accu / $exists_accu );
 
     return $data;
 
@@ -370,123 +377,122 @@ sub get_messages_info
     my $envelope = $args->{Envelope};
     my $decode   = $args->{Decodemime};
     my $imap     = $self->{'Imap'};
-    my $data     = {};
+    my $data     = undef;
 
-    if ( $imap->IsAuthenticated ) {
+    return 0 unless $imap->IsAuthenticated;
 
-        my @folders = $imap->folders;
+    my @folders = $imap->folders;
 
-        for my $folder (@folders) {
+    for my $folder (@folders) {
 
-            $imap->examine($folder);    # read only
+        $imap->examine($folder);    # read only
 
-            # Auszug aus RFC3501:
-            #
-            # Note: The STATUS command is intended to access the
-            #   status of mailboxes other than the currently selected
-            #   mailbox.  Because the STATUS command can cause the
-            #   mailbox to be opened internally, and because this
-            #   information is available by other means on the selected
-            #   mailbox, the STATUS command SHOULD NOT be used on the
-            #   currently selected mailbox.
-            #
-            # Deshalb wird hier das stabile SEARCH verwendet.
+        # Auszug aus RFC3501:
+        #
+        # Note: The STATUS command is intended to access the
+        #   status of mailboxes other than the currently selected
+        #   mailbox.  Because the STATUS command can cause the
+        #   mailbox to be opened internally, and because this
+        #   information is available by other means on the selected
+        #   mailbox, the STATUS command SHOULD NOT be used on the
+        #   currently selected mailbox.
+        #
+        # Deshalb wird hier das stabile SEARCH verwendet.
 
-            my $search = $imap->search("ALL");
-            my $mcount = @{$search};
+        my $search = $imap->search("ALL");
+        my $mcount = @{$search};
 
-            $data->{$folder}->{'MESSAGES'} = $mcount;
-            $data->{$folder}->{'SEARCH'}   = $search;
+        $data->{$folder}->{'MESSAGES'} = $mcount;
+        $data->{$folder}->{'SEARCH'}   = $search;
 
-            if ($mcount) {
+        if ($mcount) {
 
-                my $fetchpack = undef;
-                my $fetchone  = undef;
+            my $fetchpack = undef;
+            my $fetchone  = undef;
 
-                if ( $modus eq 'Fast' ) {
+            if ( $modus eq 'Fast' ) {
 
-                    $fetchone = $imap->fetch( 0, "FAST" );
-                    $args->{Hashenv} = 0;
+                $fetchone = $imap->fetch( 0, "FAST" );
+                $args->{Hashenv} = 0;
 
+            }
+            elsif ( $modus eq 'All' ) {
+
+                $fetchone = $imap->fetch( 0, "ALL" );
+
+            }
+            elsif ( $modus eq 'Full' ) {
+
+                $fetchone = $imap->fetch( 0, "FULL" );
+
+            }
+
+            my @indizes = 0 .. @{$fetchone} - 1;
+
+            if ($decode) {
+
+                for (@indizes) { ${$fetchone}[$_] = decode_mimewords( ${$fetchone}[$_] ); }
+
+            }
+
+            for (@indizes) { ${$fetchone}[$_] =~ s/\r\n|\r|\n//g; }
+
+            $data->{$folder}->{'FETCH_COMMAND'}  = shift @{$fetchone};
+            $data->{$folder}->{'FETCH_RESPONSE'} = pop @{$fetchone};
+
+            pop @indizes;
+            pop @indizes;
+
+            my @internal_dates = ();
+
+            for (@indizes) {
+
+                my $date = undef;
+
+                if ( ${$fetchone}[$_] =~ /FETCH \(INTERNALDATE \"(.*)\" RFC822\.SIZE/ ) {
+                    $date = $1;
                 }
-                elsif ( $modus eq 'All' ) {
 
-                    $fetchone = $imap->fetch( 0, "ALL" );
+                push @internal_dates, $date;
 
-                }
-                elsif ( $modus eq 'Full' ) {
+            }
 
-                    $fetchone = $imap->fetch( 0, "FULL" );
-
-                }
-
-                my @indizes = 0 .. @{$fetchone} - 1;
-
-                if ($decode) {
-
-                    for (@indizes) { ${$fetchone}[$_] = decode_mimewords( ${$fetchone}[$_] ); }
-
-                }
-
-                for (@indizes) { ${$fetchone}[$_] =~ s/\r\n|\r|\n//g; }
-
-                $data->{$folder}->{'FETCH_COMMAND'}  = shift @{$fetchone};
-                $data->{$folder}->{'FETCH_RESPONSE'} = pop @{$fetchone};
-
-                pop @indizes;
-                pop @indizes;
-
-                my @internal_dates = ();
+            if ($envelope) {
 
                 for (@indizes) {
 
-                    my $date = undef;
+                    my $package = undef;
+                    my $string  = shift @{$fetchone};
 
-                    if ( ${$fetchone}[$_] =~ /FETCH \(INTERNALDATE \"(.*)\" RFC822\.SIZE/ ) {
-                        $date = $1;
-                    }
+                    $package->{'FETCH_STRING'} = $string;
+                    $string =~ s/^(.*)ENVELOPE/* 1 FETCH (ENVELOPE/;
 
-                    push @internal_dates, $date;
+                    my $bodyStructObj = Mail::IMAPClient::BodyStructure::Envelope->new($string);
+                    unbless $bodyStructObj;
+                    $package->{'FETCH_ENVELOPE'} = $bodyStructObj;
+                    undef $bodyStructObj;
+
+                    $package->{'INTERNAL_DATE'} = shift @internal_dates;
+                    push @{$fetchpack}, $package;
 
                 }
-
-                if ($envelope) {
-
-                    for (@indizes) {
-
-                        my $package = undef;
-                        my $string  = shift @{$fetchone};
-
-                        $package->{'FETCH_STRING'} = $string;
-                        $string =~ s/^(.*)ENVELOPE/* 1 FETCH (ENVELOPE/;
-
-                        my $bodyStructObj = Mail::IMAPClient::BodyStructure::Envelope->new($string);
-                        unbless $bodyStructObj;
-                        $package->{'FETCH_ENVELOPE'} = $bodyStructObj;
-                        undef $bodyStructObj;
-
-                        $package->{'INTERNAL_DATE'} = shift @internal_dates;
-                        push @{$fetchpack}, $package;
-
-                    }
-                }
-                else {
-
-                    for (@indizes) {
-
-                        my $package = undef;
-
-                        $package->{'INTERNAL_DATE'} = shift @internal_dates;
-                        $package->{'FETCH_STRING'}  = shift @{$fetchone};
-
-                        push @{$fetchpack}, $package;
-
-                    }
-                }
-
-                $data->{$folder}->{'FETCH_DATA'} = $fetchpack;
-
             }
+            else {
+
+                for (@indizes) {
+
+                    my $package = undef;
+
+                    $package->{'INTERNAL_DATE'} = shift @internal_dates;
+                    $package->{'FETCH_STRING'}  = shift @{$fetchone};
+
+                    push @{$fetchpack}, $package;
+
+                }
+            }
+
+            $data->{$folder}->{'FETCH_DATA'} = $fetchpack;
+
         }
     }
 
