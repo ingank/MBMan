@@ -43,6 +43,9 @@ sub new
         Ssl       => 1,
         Peek      => 1,
         Uid       => 1,
+        Server    => '',
+        User      => '',
+        Password  => '',
         Directory => '~/MBData'
 
     };
