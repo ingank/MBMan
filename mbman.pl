@@ -151,7 +151,7 @@ sub fetch_message
 {
 
     # my $message = $mbman->fetch_message( Uid => '644', ReadOnly => 0 );
-    my $message = $mbman->unshift_message( Purge => 1 );
+    my $message = $mbman->unshift_message( Expunge => 1 );
     print Dumper ($message);
 
 }
