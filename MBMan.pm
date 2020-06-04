@@ -179,6 +179,68 @@ sub logout
 
 }
 
+sub unshift_message
+  #
+  # Holt die älteste Nachricht einer Mailbox vom Server
+  #
+{
+
+    my $self = shift;
+    my $args = {
+
+        Mailbox => 'INBOX',
+        Expunge => 0,
+        Save    => 0
+
+    };
+
+    while (@_) {
+
+        my $k = ucfirst lc shift;
+        my $v = shift;
+        $args->{$k} = $v if defined $v;
+
+    }
+
+    my $mailbox = $args->{Mailbox};
+    my $expunge = $args->{Expunge};
+    my $save    = $args->{Save};
+    my $imap    = $self->{Imap};
+
+    return 0 unless $imap->IsAuthenticated;
+    return 0 unless $imap->exists($mailbox);
+
+    $imap->examine($mailbox) || return 0;
+
+    my $data          = {};
+    my $uid_list      = $imap->messages || return 0;
+    my $uid           = ${$uid_list}[0];
+    my $message       = $imap->message_string($uid);
+    my $idate         = $imap->internaldate($uid);
+    my $hdate         = $imap->date($uid);
+    my $server_size   = $imap->size($uid);
+    my $received_size = length($message);
+    my $md5           = md5_hex($message);
+
+    $data->{Message}      = $message;
+    $data->{InternalDate} = $idate;
+    $data->{HeaderDate}   = $hdate;
+    $data->{ServerSize}   = $server_size;
+    $data->{ReceivedSize} = $received_size;
+    $data->{MD5}          = $md5;
+
+    if ($expunge) {
+
+        $imap->select($mailbox);
+        $imap->delete_message($uid);
+        $imap->expunge;
+
+    }
+
+    return $data;
+
+}
+
 sub info
   #
   # Gib gesammelte Infos an den Hostprozess
