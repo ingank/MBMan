@@ -212,9 +212,13 @@ sub unshift_message
 
     $imap->examine($mailbox) || return 0;
 
-    my $data          = {};
-    my $uid_list      = $imap->messages || return 0;
+    my $data = {};
+    my $uid_list = $imap->messages || return 0;
+
+    return $data unless scalar @{$uid_list};
+
     my $uid           = ${$uid_list}[0];
+    my $uidvalidity   = $imap->uidvalidity($mailbox);
     my $message       = $imap->message_string($uid);
     my $idate         = $imap->internaldate($uid);
     my $hdate         = $imap->date($uid);
@@ -228,6 +232,7 @@ sub unshift_message
     $data->{ServerSize}   = $server_size;
     $data->{ReceivedSize} = $received_size;
     $data->{MD5}          = $md5;
+    $data->{UidValidity}  = $uidvalidity;
 
     if ($expunge) {
 
