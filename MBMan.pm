@@ -179,6 +179,22 @@ sub logout
 
 }
 
+sub get_folder_list
+  #
+  # Holt die aktuelle Liste der Mailbox-Ordner
+  #
+{
+
+    my $self = shift;
+    my $imap = $self->{Imap};
+
+    return 0 unless $imap->IsAuthenticated;
+
+    my $data = $imap->folders;
+    return $data;
+
+}
+
 sub unshift_message
   #
   # Holt die älteste Nachricht einer Mailbox vom Server
@@ -190,7 +206,6 @@ sub unshift_message
 
         Mailbox => 'INBOX',
         Expunge => 0,
-        Save    => 0
 
     };
 
@@ -202,6 +217,7 @@ sub unshift_message
 
     }
 
+    my $data    = undef;
     my $mailbox = $args->{Mailbox};
     my $expunge = $args->{Expunge};
     my $save    = $args->{Save};
@@ -211,28 +227,19 @@ sub unshift_message
     return 0 unless $imap->exists($mailbox);
 
     $imap->examine($mailbox) || return 0;
-
-    my $data = {};
     my $uid_list = $imap->messages || return 0;
 
-    return $data unless scalar @{$uid_list};
+    return 0 unless scalar @{$uid_list};
 
-    my $uid           = ${$uid_list}[0];
-    my $uidvalidity   = $imap->uidvalidity($mailbox);
-    my $message       = $imap->message_string($uid);
-    my $idate         = $imap->internaldate($uid);
-    my $hdate         = $imap->date($uid);
-    my $server_size   = $imap->size($uid);
-    my $received_size = length($message);
-    my $md5           = md5_hex($message);
-
-    $data->{Message}      = $message;
-    $data->{InternalDate} = $idate;
-    $data->{HeaderDate}   = $hdate;
-    $data->{ServerSize}   = $server_size;
-    $data->{ReceivedSize} = $received_size;
-    $data->{MD5}          = $md5;
-    $data->{UidValidity}  = $uidvalidity;
+    my $uid     = ${$uid_list}[0];
+    my $message = $imap->message_string($uid);
+    $data->{'00_Message'}      = $message;
+    $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
+    $data->{'02_InternalDate'} = $imap->internaldate($uid);
+    $data->{'03_HeaderDate'}   = $imap->date($uid);
+    $data->{'04_ServerSize'}   = $imap->size($uid);
+    $data->{'05_ReceivedSize'} = length($message);
+    $data->{'06_MD5'}          = md5_hex($message);
 
     if ($expunge) {
 

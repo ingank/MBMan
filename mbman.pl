@@ -35,6 +35,7 @@ our $opt_s = 0;    # server-info
 our $opt_a = 0;    # account-info
 our $opt_m = 0;    # messages-info
 our $opt_f = 0;    # fetch message
+our $opt_t = 0;    # any test
 
 our $mbman = undef;
 
@@ -44,7 +45,7 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hvclsamf');
+        getopts('S:U:P:hvclsamft');
         $opt_h and do { &print_help(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
@@ -57,12 +58,9 @@ sub main {
         $opt_a and do { &print_account_info };
         $opt_m and do { &print_messages_infos };
         $opt_f and do { &fetch_message };
-
-        &print_status;
+        $opt_t and do { &test };
 
         &disconnect;
-
-        #&print_status;
 
         return 0;
 
@@ -153,6 +151,17 @@ sub fetch_message
     # my $message = $mbman->fetch_message( Uid => '644', ReadOnly => 0 );
     my $message = $mbman->unshift_message( Expunge => 1 );
     print Dumper ($message);
+
+}
+
+sub test
+  #
+  #
+  #
+{
+
+    my $ret = $mbman->get_folder_list;
+    print Dumper ($ret);
 
 }
 
