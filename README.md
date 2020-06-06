@@ -44,9 +44,22 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 * Response / Antwort
   * Eine IMAP4-Antwort eines Servers an den Client.
 * State *of connection* / Zustand *der Verbindung*
-  * Established / Verbunden
-    * konretisiert den Zustand einer bestehenden **Verbindung** zwischen Client und Server.
-    * IMAP4-Befehle und Antworten können übermittelt werden.
+  * Any State / (in) jedem Zustand
+    * konretisiert den Zustand einer bestehenden **Verbindung** zwischen Client und Server. Dies schließt auch alle übergeordneten Zustände ein.
+    * Mögliche IMAP-Befehle laut RFC3501:
+      * CAPABILITY
+      * NOOP
+      * LOGOUT
+  * Not Authenticated / Nicht authentifiziert
+    * konkretisiert den Zustand vor/während der Authentifizierung des Users gegenüber dem Server.
+    * wird beispielsweise mit der Server-Antwort `* OK IMAP4rev1 server ready` eingeleitet.
+    * Mögliche IMAP-Befehle laut RFC3501:
+      * CAPABILITY
+      * NOOP
+      * LOGOUT
+      * STARTTLS
+      * AUTHENTICATE
+      * LOGIN
   * Authenticated / Authentifiziert
     * der Nutzer konnte sich gegenüber dem IMAP-Server identifizieren.
     * es wurde also ein erfolgreicher `LOGIN` oder `AUTHENTICATE` Befehl gesendet.
