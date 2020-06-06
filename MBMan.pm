@@ -679,6 +679,62 @@ sub limit
 
 # Interne Funktionen
 
+sub _chomp_str
+  #
+{
+
+    my $str = shift;
+
+    return undef unless $str;
+
+    $str =~ s/\r\n|\r|\n//g;
+    return $str;
+
+}
+
+sub _chomp_array
+  #
+{
+
+    my $array = shift;
+    my $out   = ();
+
+    return undef unless scalar @{$array};
+
+    push @{$out}, _chomp_str($_) for @{$array};
+
+    # for my $row ( @{$in} ) {
+
+    #     $row =~ s/\r\n|\r|\n//g;
+    #     push @{$out}, $row;
+
+    # }
+
+    return $out;
+
+}
+
+sub _transaction_filter
+  #
+{
+
+    my $in   = shift;
+    my $term = shift;
+    my $out  = ();
+
+    return undef unless scalar @{$in};
+
+    for my $row ( @{$in} ) {
+
+        $row =~ s/\r\n|\r|\n//g;
+        push @{$out}, $row if grep $term, $row;
+
+    }
+
+    return $out;
+
+}
+
 sub _get_quota_usage
   #
 {
