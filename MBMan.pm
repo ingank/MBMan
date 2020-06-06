@@ -265,46 +265,10 @@ sub info
 {
 
     my $self = shift;
-    my $data = Storable::dclone( $self->{Notes} );
-    return $data;
 
-}
-
-sub get_server_info
-  #
-  # ANWENDUNG
-  #
-  # my $foo = $mbman->get_server_info();
-  #
-  # BESCHREIBUNG
-  #
-  # Übergib folgende Daten als referenzierten Hash an $foo:
-  #
-  # ** InitResponse    => Erste Serverantwort im `Connected State` (Rohform)
-  # ** InitCapability  => Server-Capability im `Connected State`
-  # ** LoginCapability => Server-Capability im `Authenticated State`
-  #
-  # BEACHTE
-  #
-  # ** wenn keine Verbindung besteht, wird `undef` zurückgegeben.
-  # ** LoginCapability setzt den Zustand `Authenticated` voraus.
-  # ** Die Daten werden aus dem internen Cache aggregiert,
-  #    ein expliziter IMAP-Befehl wird deshalb nicht ausgeführt.
-  #
-{
-    my $self = shift;
-    my $imap = $self->{Imap};
-    my $data = undef;
-
-    if ( $imap->IsConnected ) {
-
-        $data->{InitResponse}    = $self->{InitResponse}    if exists $self->{InitResponse};
-        $data->{InitCapability}  = $self->{InitCapability}  if exists $self->{InitCapability};
-        $data->{LoginCapability} = $self->{LoginCapability} if exists $self->{LoginCapability};
-
-    }
-
-    return $data;
+    #my $data = Storable::dclone( $self->{Notes} );
+    #return $data;
+    return $self->{Notes};
 
 }
 
