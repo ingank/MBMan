@@ -24,49 +24,39 @@ my @messages = (
     'mbman.pl erwartet Argumente. Hilfe über "mbman.pl -h"!'
 );
 
-our $opt_S = '';
-our $opt_U = '';
-our $opt_P = '';
-our $opt_h = 0;
-our $opt_v = 0;    # verbose
-our $opt_c = 0;    # connect
-our $opt_l = 0;    # login
-our $opt_s = 0;    # server-info
-our $opt_a = 0;    # account-info
-our $opt_m = 0;    # messages-info
-our $opt_f = 0;    # fetch message
-our $opt_t = 0;    # any test
+our $opt_S = '';    # server name
+our $opt_U = '';    # user
+our $opt_P = '';    # password
+our $opt_h = 0;     # help
+our $opt_v = 0;     # verbose
+our $opt_e = 0;     # expunge?
+our $opt_c = 0;     # connect
+our $opt_l = 0;     # login
+our $opt_f = 0;     # folder list
+our $opt_u = 0;     # unshift message
 
 our $mbman = undef;
 
-exit &main();      # Hauptprogramm
+exit &main();       # Hauptprogramm
 
 sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hvclsamft');
+        getopts('S:U:P:hveclfu');
         $opt_h and do { &print_help(); return 1 };
 
-        $mbman = MBMan->new( Debug => $opt_v, Peek => 0 );
-
-        #&print_status;
+        $mbman = MBMan->new( Debug => $opt_v );
 
         $opt_c and do { &connect };
         $opt_l and do { &login };
-        $opt_s and do { &print_server_info };
-        $opt_a and do { &print_account_info };
-        $opt_m and do { &print_messages_infos };
-        $opt_f and do { &fetch_message };
-        $opt_t and do { &test };
+        $opt_f and do { &folder_list };
 
+        &print_status;
         &disconnect;
-
-        return 0;
 
     }
 
-    print_info(1);
     return 0;
 
 }
@@ -107,16 +97,10 @@ sub print_status {
 
 }
 
-sub print_server_info
-  #
-  # Allgemeine Infos über den IMAP-Server ermitteln und ausgeben.
-  #
-{
+sub folder_list {
 
-    my $info = $mbman->get_server_info;
-    print Dumper ($info);
-
-    #    print Dumper ($mbman);
+    my $data = $mbman->get_folder_list;
+    print Dumper $data;
 
 }
 
@@ -142,26 +126,14 @@ sub print_messages_info
 
 }
 
-sub fetch_message
+sub unshift_message
   #
   #
   #
 {
 
-    # my $message = $mbman->fetch_message( Uid => '644', ReadOnly => 0 );
-    my $message = $mbman->unshift_message( Expunge => 1 );
+    my $message = $mbman->unshift_message( Expunge => 0 );
     print Dumper ($message);
-
-}
-
-sub test
-  #
-  #
-  #
-{
-
-    my $ret = $mbman->get_folder_list;
-    print Dumper ($ret);
 
 }
 
