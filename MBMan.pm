@@ -93,7 +93,6 @@ sub connect
     my $imap   = $self->{Imap};
     my $notes  = $self->{Notes};
     my $server = $self->{Server};
-    my $data   = undef;
 
     return 1 if $imap->IsConnected;
     return 0 unless $server;
@@ -101,17 +100,22 @@ sub connect
     $imap->Server($server);
     $imap->connect || return 0;
 
-    $data = $imap->LastIMAPCommand;
-    $data =~ s/\r\n|\r|\n//g;
-    $notes->{'51_ServerResponse'} = $data;
+    # slurp
+    my $s_resp = $imap->LastIMAPCommand;
+    my $s_id   = $imap->tag_and_run('ID NIL');
+    my $s_capa = $imap->capability;
 
-    $data = $imap->capability;
-    $notes->{'52_ServerCapability'} = $data;
+    # transmutation
+    $s_resp = &_chomp_str($s_resp);
+    $s_id   = ( &_chomp_array($s_id) )->[1];
 
-    $data = $imap->tag_and_run('ID NIL');
-    $notes->{'53_ServerIDTag'} = $data;
+    # spit out
+    $notes->{'10_ServerResponse'}   = $s_resp;
+    $notes->{'11_ServerIDTag'}      = $s_id;
+    $notes->{'12_ServerCapability'} = $s_capa;
 
-    return 0 if $imap->IsUnconnected;
+    $notes->{'00_Status'} = 'Connected';
+
     return 1;
 
 }
