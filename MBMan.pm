@@ -41,7 +41,7 @@ sub new
 
         Debug     => 0,
         Ssl       => 1,
-        Peek      => 1,
+        Peek      => 1,           # 1 = setze nicht das /SEEN Flag
         Uid       => 1,
         Server    => '',
         User      => '',
@@ -69,7 +69,8 @@ sub new
 
     ) || die;
 
-    $self->{Notes} = {};
+    $self->{Notes}->{'00_Status'} = 'New';
+
     return $self;
 
 }
