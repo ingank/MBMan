@@ -154,12 +154,9 @@ sub login
 
     return 0 unless $imap->IsAuthenticated;
 
-    $data = $imap->LastIMAPCommand;
-    $data =~ s/\r\n|\r|\n//g;
-    $notes->{'61_LoginResponse'} = $data;
+    $notes->{'20_LoginCapability'} = $imap->capability;
 
-    $data = $imap->capability;
-    $notes->{'62_LoginCapability'} = $data;
+    $notes->{'00_Status'} = 'Authenticated';
 
     return 1;
 
