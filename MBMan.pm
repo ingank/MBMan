@@ -177,6 +177,9 @@ sub logout
     $imap->logout;
 
     return 0 if $imap->IsConnected;
+
+    $notes->{Status} = 'Disconnected';
+
     return 1;
 
 }
