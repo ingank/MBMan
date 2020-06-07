@@ -791,7 +791,3 @@ sub _clean_address
     $data = substr( $data, 0, -2 );
     return $data;
 }
-
-sub _test {
-    _clean_address(shift);
-}
