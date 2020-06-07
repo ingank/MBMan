@@ -15,6 +15,8 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
 * [RFC1731](https://tools.ietf.org/html/rfc1731)
   * IMAP4 Authentication Mechanisms
+* [RFC2087](https://tools.ietf.org/html/rfc2087)
+  * IMAP4 QUOTA extension
 * [RFC2359](https://tools.ietf.org/html/rfc2359)
   * IMAP4 UIDPLUS extension
 * [RFC2971](https://tools.ietf.org/html/rfc2971)
