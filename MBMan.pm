@@ -5,13 +5,12 @@
 #
 
 package MBMan;
+use strict;
 
 our $VERSION = '0.0.2';
 
-use strict;
 use warnings;
 use diagnostics;
-
 use feature qw(say);
 use Storable;
 use Mail::IMAPClient;
@@ -736,7 +735,7 @@ sub _chomp_str
 
     my $str = shift;
 
-    return undef unless $str;
+    return unless $str;
 
     $str =~ s/\r\n|\r|\n//g;
     return $str;
@@ -750,7 +749,7 @@ sub _chomp_array
     my $array = shift;
     my $out   = ();
 
-    return undef unless scalar @{$array};
+    return unless scalar @{$array};
 
     push @{$out}, _chomp_str($_) for @{$array};
 
@@ -773,7 +772,7 @@ sub _transaction_filter
     my $term = shift;
     my $out  = ();
 
-    return undef unless scalar @{$in};
+    return unless scalar @{$in};
 
     for my $row ( @{$in} ) {
 
