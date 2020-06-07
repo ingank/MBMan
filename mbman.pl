@@ -53,6 +53,9 @@ sub main {
         $opt_f and do { &folder_list };
 
         &print_status;
+
+        #        say 'Limit erreicht' if $mbman->limit_reached;
+
         &disconnect;
 
     }
