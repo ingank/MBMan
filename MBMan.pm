@@ -112,9 +112,9 @@ sub connect
     $s_id   = ( &_chomp_array($s_id) )->[1];
 
     # spit out
-    $notes->{'10_ServerResponse'}   = $s_resp;
-    $notes->{'11_ServerIDTag'}      = $s_id;
-    $notes->{'12_ServerCapability'} = $s_capa;
+    $notes->{'10_ServerResponse'} = $s_resp;
+    $notes->{'11_ServerIDTag'}    = $s_id;
+    $notes->{'12_ServerCapa'}     = $s_capa;
 
     $notes->{'00_Status'} = 'Connected';
 
