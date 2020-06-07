@@ -13,14 +13,17 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
 ---
 
-* [RFC1731](https://tools.ietf.org/html/rfc1731)
-  * IMAP4 Authentication Mechanisms
+* [RFC6154](https://tools.ietf.org/html/rfc6154)
+  * IMAP LIST Extension for Special-Use Mailboxes
+  * Es geht um spezielle Mailboxen ( \Drafts, \Junk, \Trash, ... )
 * [RFC2087](https://tools.ietf.org/html/rfc2087)
   * IMAP4 QUOTA extension
 * [RFC2359](https://tools.ietf.org/html/rfc2359)
   * IMAP4 UIDPLUS extension
 * [RFC2971](https://tools.ietf.org/html/rfc2971)
   * IMAP4 ID extension
+* [RFC1731](https://tools.ietf.org/html/rfc1731)
+  * IMAP4 Authentication Mechanisms
 
 ## Einführung IMAP4
 
@@ -37,7 +40,6 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
     * Der Speicherplatz für Nachrichten kann mit Hilfe von Quotas kontingentiert werden.
 * Mailbox / Postfach im Speziellen:
   * Ein Postfach kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden.
-  * Ein Postfach ohne Namen ist nicht vorgesehen.
   * Das Standard-Postfach trägt den Namen *INBOX*.
   * Jede Nachricht ist einem bestimmten Postfach zugeordnet.
   * Es können untergeordnete Postfächer erstellt werden.
