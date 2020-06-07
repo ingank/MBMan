@@ -114,8 +114,7 @@ sub connect
     $notes->{'10_ServerResponse'} = $s_resp;
     $notes->{'11_ServerIDTag'}    = $s_id;
     $notes->{'12_ServerCapa'}     = $s_capa;
-
-    $notes->{'00_Status'} = 'Connected';
+    $notes->{'00_Status'}         = 'Connected';
 
     return 1;
 
@@ -209,8 +208,9 @@ sub folders
 
     return 0 unless $imap->IsAuthenticated;
 
-    my $folders  = $imap->folders;
+    # my $folders  = $imap->folders;
     my @fhashes  = $imap->folders_hash;
+    my $folders  = ();
     my $specials = {};
     my $data     = {};
 
@@ -219,34 +219,13 @@ sub folders
         next unless defined $fhash->{name};
         my @special = grep { /All|Archive|Drafts|Flagged|Junk|Sent|Trash/ } @{ $fhash->{attrs} };
         if (@special) { $specials->{ $special[0] } = $fhash->{name}; }
+        push @{$folders}, $fhash->{name};
 
     }
 
     $data->{Folders}  = $folders;
     $data->{Specials} = $specials;
     return $data;
-
-}
-
-sub logout
-  #
-  # IMAP LOGOUT
-  #
-{
-
-    my $self  = shift;
-    my $imap  = $self->{Imap};
-    my $notes = $self->{Notes};
-
-    return 1 unless $imap->IsConnected;
-
-    $imap->logout;
-
-    return 0 if $imap->IsConnected;
-
-    $notes->{Status} = 'Disconnected';
-
-    return 1;
 
 }
 
@@ -305,6 +284,28 @@ sub unshift_message
     }
 
     return $data;
+
+}
+
+sub logout
+  #
+  # IMAP LOGOUT
+  #
+{
+
+    my $self  = shift;
+    my $imap  = $self->{Imap};
+    my $notes = $self->{Notes};
+
+    return 1 unless $imap->IsConnected;
+
+    $imap->logout;
+
+    return 0 if $imap->IsConnected;
+
+    $notes->{Status} = 'Disconnected';
+
+    return 1;
 
 }
 
