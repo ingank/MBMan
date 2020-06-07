@@ -212,7 +212,7 @@ sub quota
 
 sub folders
   #
-  # Holt die aktuelle Liste der Mailbox-Ordner
+  # Holt die aktuelle Liste der Postfächer
   #
 {
 
@@ -244,7 +244,7 @@ sub folders
 
 sub unshift_message
   #
-  # Holt die älteste Nachricht einer Mailbox vom Server
+  # Holt die älteste Nachricht eines Postfaches vom Server
   #
 {
 
@@ -301,6 +301,9 @@ sub unshift_message
 }
 
 sub limit_reached
+  #
+  # Gibt WAHR zurück, wenn das voreingestellte Limit eines
+  # Nutzerkontos überschritten wurde
   #
 {
     my $self  = shift;
