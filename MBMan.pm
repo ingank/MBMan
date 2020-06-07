@@ -155,11 +155,77 @@ sub login
 
     return 0 unless $imap->IsAuthenticated;
 
-    $notes->{'20_LoginCapability'} = $imap->capability;
+    # slurp some essentials
+    my $capa = $imap->capability;
+    my ( $quota, $usage ) = $self->quota;
+    my $folders = $imap->folders;
+    my @fhashes = $imap->folders_hash;
 
-    $notes->{'00_Status'} = 'Authenticated';
+    # transmutation
+    my $specials = {};
+    foreach my $fhash (@fhashes) {
+
+        next unless defined $fhash->{name};
+        my @special = grep { /All|Archive|Drafts|Flagged|Junk|Sent|Trash/ } @{ $fhash->{attrs} };
+        if (@special) { $specials->{ $special[0] } = $fhash->{name}; }
+
+    }
+
+    # spit out
+    $notes->{'20_UserCapa'}     = $capa;
+    $notes->{'21_UserQuota'}    = $quota;
+    $notes->{'22_UserUsage'}    = $usage;
+    $notes->{'23_UserFolders'}  = $folders;
+    $notes->{'24_UserSpecials'} = $specials;
+    $notes->{'00_Status'}       = 'Authenticated';
 
     return 1;
+
+}
+
+sub quota
+  #
+{
+    my $self  = shift;
+    my $imap  = $self->{Imap};
+    my $quota = 0;
+    my $usage = 0;
+
+    if ( $imap->IsAuthenticated ) {
+
+        my $quotaroot = $imap->getquotaroot();
+
+        for ( @{$quotaroot} ) {
+
+            if ( $_ =~ /\(STORAGE (\d+) (\d+)\)/ ) {
+
+                $usage = $1 * 1024;
+                $quota = $2 * 1024;
+                last;
+
+            }
+        }
+    }
+
+    $usage = "$usage";
+    $quota = "$quota";
+    return ( $quota, $usage );
+
+}
+
+sub folder
+  #
+  # Holt die aktuelle Liste der Mailbox-Ordner
+  #
+{
+
+    my $self = shift;
+    my $imap = $self->{Imap};
+
+    return 0 unless $imap->IsAuthenticated;
+
+    my $data = $imap->folders_hash;
+    return $data;
 
 }
 
@@ -182,22 +248,6 @@ sub logout
     $notes->{Status} = 'Disconnected';
 
     return 1;
-
-}
-
-sub get_folder_list
-  #
-  # Holt die aktuelle Liste der Mailbox-Ordner
-  #
-{
-
-    my $self = shift;
-    my $imap = $self->{Imap};
-
-    return 0 unless $imap->IsAuthenticated;
-
-    my $data = $imap->folders;
-    return $data;
 
 }
 
@@ -760,6 +810,7 @@ sub _get_quota_usage
     }
 
     return ( $quota, $usage );
+
 }
 
 sub _clean_address
