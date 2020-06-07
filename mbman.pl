@@ -102,7 +102,7 @@ sub print_status {
 
 sub folder_list {
 
-    my $data = $mbman->get_folder_list;
+    my $data = $mbman->folders;
     print Dumper $data;
 
 }
