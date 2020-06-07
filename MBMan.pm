@@ -287,6 +287,25 @@ sub unshift_message
 
 }
 
+sub limit_reached
+  #
+{
+    my $self  = shift;
+    my $imap  = $self->{Imap};
+    my $notes = $self->{Notes};
+
+    return 0 unless $imap->IsAuthenticated;
+
+    my ( $quota, $usage, $usage100 ) = $self->quota;
+    $notes->{'21_UserQuota'}    = $quota;
+    $notes->{'22_UserUsage'}    = $usage;
+    $notes->{'23_UserUsage100'} = $usage100;
+
+    return 0 if $usage100 lt $self->{Limit};
+    return 1;
+
+}
+
 sub logout
   #
   # IMAP LOGOUT
