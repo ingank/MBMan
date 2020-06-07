@@ -22,22 +22,26 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 * [RFC2971](https://tools.ietf.org/html/rfc2971)
   * IMAP4 ID extension
 
-## Fachbegriffe im Sinne der IMAP VERSION 4rev1
+## Einführung IMAP4
 
 * User / Nutzer
   * Ein menschlicher Benutzer.
-* Username / Nutzerkennung
-  * Eine dem IMAP-Server bekannte Zeichenfolge für einen Nutzer.
-* User Account / Nutzerkonto
-  * Ein Nutzerkonto ist eine Datenbank, die einer bestimmten Nutzerkennung zugeordnet ist.
-  * Die Datenbank besteht aus Mailboxen und diesen Mailboxen zugeordneten Nachrichten.
-* Mailbox
-  * Eine Mailbox kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden.
-  * Eine Mailbox ohne Namen ist nicht vorgesehen.
-  * Dementsprechend ist jede Nachricht einer bestimmten Mailbox zugeordnet.
-  * Es können untergeordnete Mailboxen erstellt und genutzt werden.
-  * Die Standard-Mailbox trägt den Namen *INBOX*.
-  * Untergeordnete Mailboxen werden durch ein vom IMAP4-Server festgelegtes Zeichen getrennt. Beispiel: *INBOX.Foo*
+* User Account / Nutzerkonto:
+  * Username / Nutzerkennung
+    * Die Nutzerkennung ist eine dem IMAP-Server bekannte Zeichenfolge für einen Nutzer.
+  * Mailbox / Postfach
+    * Dem Nutzer sind Postfächer zugeordnet.
+  * Access Control List (ACL) / Zugriffskontrolle
+    * Der Zugriff des Nutzers auf bestimmte Ressourcen kann mit Hilfe der Zugriffskontrolle geregelt sein.
+  * Quota / Kontingent
+    * Der Speicherplatz für Nachrichten kann mit Hilfe von Quotas kontingentiert werden.
+* Mailbox / Postfach im Speziellen:
+  * Ein Postfach kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden.
+  * Ein Postfach ohne Namen ist nicht vorgesehen.
+  * Das Standard-Postfach trägt den Namen *INBOX*.
+  * Jede Nachricht ist einem bestimmten Postfach zugeordnet.
+  * Es können untergeordnete Postfächer erstellt werden.
+  * Untergeordnete Mailboxen werden durch ein vom IMAP4-Server festgelegtes Zeichen (engl.: Delimiter) getrennt. Beispiel: *INBOX.Foo*
 * Connection / Verbindung
   * Eine IMAP4-Verbindung besteht aus Client-Server-Kommandos und Server-Client-Antworten.
   * Sie besteht zeitlich gesehen direkt vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
