@@ -154,14 +154,15 @@ sub login
     return 0 unless $imap->IsAuthenticated;
 
     my $capa = $imap->capability;
-    my ( $quota, $usage ) = $self->quota;
+    my ( $quota, $usage, $usage100 ) = $self->quota;
     my $folders = $self->folders;
 
-    $notes->{'20_UserCapa'}    = $capa;
-    $notes->{'21_UserQuota'}   = $quota;
-    $notes->{'22_UserUsage'}   = $usage;
-    $notes->{'23_UserFolders'} = $folders;
-    $notes->{'00_Status'}      = 'Authenticated';
+    $notes->{'20_UserCapa'}     = $capa;
+    $notes->{'21_UserQuota'}    = $quota;
+    $notes->{'22_UserUsage'}    = $usage;
+    $notes->{'23_UserUsage100'} = $usage100;
+    $notes->{'24_UserFolders'}  = $folders;
+    $notes->{'00_Status'}       = 'Authenticated';
 
     return 1;
 
@@ -170,10 +171,11 @@ sub login
 sub quota
   #
 {
-    my $self  = shift;
-    my $imap  = $self->{Imap};
-    my $quota = 0;
-    my $usage = 0;
+    my $self     = shift;
+    my $imap     = $self->{Imap};
+    my $quota    = 0;
+    my $usage    = 0;
+    my $usage100 = 0;
 
     if ( $imap->IsAuthenticated ) {
 
@@ -191,9 +193,10 @@ sub quota
         }
     }
 
-    $usage = "$usage";
-    $quota = "$quota";
-    return ( $quota, $usage );
+    $usage    = "$usage";
+    $quota    = "$quota";
+    $usage100 = $usage / $quota * 100;
+    return ( $quota, $usage, $usage100 );
 
 }
 
