@@ -94,6 +94,7 @@ sub connect
     my $imap   = $self->{Imap};
     my $notes  = $self->{Notes};
     my $server = $self->{Server};
+    my $debug  = $self->{Debug};
 
     return 1 if $imap->IsConnected;
     return 0 unless $server;
@@ -101,21 +102,25 @@ sub connect
     $imap->Server($server);
     $imap->connect || return 0;
 
-    # slurp
-    my $s_resp = $imap->LastIMAPCommand;
-    my $s_id   = $imap->tag_and_run('ID NIL');
-    my $s_capa = $imap->capability;
+    if ($debug) {
 
-    # transmutation
-    $s_resp = &_chomp_str($s_resp);
-    $s_id   = ( &_chomp_array($s_id) )->[1];
+        # slurp
+        my $s_resp = $imap->LastIMAPCommand;
+        my $s_id   = $imap->tag_and_run('ID NIL');
+        my $s_capa = $imap->capability;
 
-    # spit out
-    $notes->{'10_ServerResponse'} = $s_resp;
-    $notes->{'11_ServerIDTag'}    = $s_id;
-    $notes->{'12_ServerCapa'}     = $s_capa;
-    $notes->{'00_Status'}         = 'Connected';
+        # transmutation
+        $s_resp = &_chomp_str($s_resp);
+        $s_id   = ( &_chomp_array($s_id) )->[1];
 
+        # spit out
+        $notes->{'10_ServerResponse'} = $s_resp;
+        $notes->{'11_ServerIDTag'}    = $s_id;
+        $notes->{'12_ServerCapa'}     = $s_capa;
+
+    }
+
+    $notes->{'00_Status'} = 'Connected';
     return 1;
 
 }
@@ -140,6 +145,7 @@ sub login
     my $notes = $self->{Notes};
     my $user  = $self->{User};
     my $pass  = $self->{Password};
+    my $debug = $self->{Debug};
     my $data  = undef;
 
     return 1 if $imap->IsAuthenticated;
@@ -147,23 +153,27 @@ sub login
     return 0 unless $user;
     return 0 unless $pass;
 
-    $imap->User( $self->{User} );
-    $imap->Password( $self->{Password} );
+    $imap->User($user);
+    $imap->Password($pass);
     $imap->login;
 
     return 0 unless $imap->IsAuthenticated;
 
-    my $capa = $imap->capability;
-    my ( $quota, $usage, $usage100 ) = $self->quota;
-    my $folders = $self->folders;
+    if ($debug) {
 
-    $notes->{'20_UserCapa'}     = $capa;
-    $notes->{'21_UserQuota'}    = $quota;
-    $notes->{'22_UserUsage'}    = $usage;
-    $notes->{'23_UserUsage100'} = $usage100;
-    $notes->{'24_UserFolders'}  = $folders;
-    $notes->{'00_Status'}       = 'Authenticated';
+        my $capa = $imap->capability;
+        my ( $quota, $usage, $usage100 ) = $self->quota;
+        my $folders = $self->folders;
 
+        $notes->{'20_UserCapa'}     = $capa;
+        $notes->{'21_UserQuota'}    = $quota;
+        $notes->{'22_UserUsage'}    = $usage;
+        $notes->{'23_UserUsage100'} = $usage100;
+        $notes->{'24_UserFolders'}  = $folders;
+
+    }
+
+    $notes->{'00_Status'} = 'Authenticated';
     return 1;
 
 }
