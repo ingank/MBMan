@@ -155,29 +155,15 @@ sub login
 
     return 0 unless $imap->IsAuthenticated;
 
-    # slurp some essentials
     my $capa = $imap->capability;
     my ( $quota, $usage ) = $self->quota;
-    my $folders = $imap->folders;
-    my @fhashes = $imap->folders_hash;
+    my $folders = $self->folders;
 
-    # transmutation
-    my $specials = {};
-    foreach my $fhash (@fhashes) {
-
-        next unless defined $fhash->{name};
-        my @special = grep { /All|Archive|Drafts|Flagged|Junk|Sent|Trash/ } @{ $fhash->{attrs} };
-        if (@special) { $specials->{ $special[0] } = $fhash->{name}; }
-
-    }
-
-    # spit out
-    $notes->{'20_UserCapa'}     = $capa;
-    $notes->{'21_UserQuota'}    = $quota;
-    $notes->{'22_UserUsage'}    = $usage;
-    $notes->{'23_UserFolders'}  = $folders;
-    $notes->{'24_UserSpecials'} = $specials;
-    $notes->{'00_Status'}       = 'Authenticated';
+    $notes->{'20_UserCapa'}    = $capa;
+    $notes->{'21_UserQuota'}   = $quota;
+    $notes->{'22_UserUsage'}   = $usage;
+    $notes->{'23_UserFolders'} = $folders;
+    $notes->{'00_Status'}      = 'Authenticated';
 
     return 1;
 
@@ -213,7 +199,7 @@ sub quota
 
 }
 
-sub folder
+sub folders
   #
   # Holt die aktuelle Liste der Mailbox-Ordner
   #
@@ -224,7 +210,21 @@ sub folder
 
     return 0 unless $imap->IsAuthenticated;
 
-    my $data = $imap->folders_hash;
+    my $folders  = $imap->folders;
+    my @fhashes  = $imap->folders_hash;
+    my $specials = {};
+    my $data     = {};
+
+    foreach my $fhash (@fhashes) {
+
+        next unless defined $fhash->{name};
+        my @special = grep { /All|Archive|Drafts|Flagged|Junk|Sent|Trash/ } @{ $fhash->{attrs} };
+        if (@special) { $specials->{ $special[0] } = $fhash->{name}; }
+
+    }
+
+    $data->{Folders}  = $folders;
+    $data->{Specials} = $specials;
     return $data;
 
 }
