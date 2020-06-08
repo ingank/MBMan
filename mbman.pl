@@ -33,6 +33,7 @@ our $opt_e = 0;     # expunge?
 our $opt_c = 0;     # connect
 our $opt_l = 0;     # login
 our $opt_f = 0;     # folder list
+our $opt_q = 0;     # quota
 our $opt_u = 0;     # unshift message
 
 our $mbman = undef;
@@ -43,20 +44,22 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hveclfu');
+        getopts('S:U:P:hveclfqu');
         $opt_h and do { &print_help(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v );
 
         $opt_c and do { &connect };
         $opt_l and do { &login };
-        $opt_f and do { &folder_list };
+        $opt_f and do { &folders };
+        $opt_q and do { &quota };
+        $opt_u and do { &unshift_message };
 
         &print_status;
 
-        #        say 'Limit erreicht' if $mbman->limit_reached;
-
         &disconnect;
+
+        &print_status;
 
     }
 
@@ -95,37 +98,20 @@ sub disconnect {
 
 sub print_status {
 
-    my $ax = $mbman->info;
+    my $ax = $mbman->notes;
     print Dumper $ax;
 
 }
 
-sub folder_list {
+sub folders {
 
-    my $data = $mbman->folders;
-    print Dumper $data;
-
-}
-
-sub print_account_info
-  #
-  # Allgemeine Infos über den IMAP-Server-Account ermitteln und ausgeben.
-  #
-{
-
-    my $info = $mbman->get_account_info;
-    print Dumper ($info);
+    $mbman->folders;
 
 }
 
-sub print_messages_info
-  #
-  # Allgemeine Infos über das IMAP-Postfach ermitteln und ausgeben.
-  #
-{
+sub quota {
 
-    my $info = $mbman->get_messages_info( Modus => 'Full', HashEnv => 1, DecodeMime => 1 );
-    print Dumper ($info);
+    $mbman->quota;
 
 }
 
@@ -135,8 +121,7 @@ sub unshift_message
   #
 {
 
-    my $message = $mbman->unshift_message( Expunge => 0 );
-    print Dumper ($message);
+    $mbman->unshift_message( Expunge => $opt_e );
 
 }
 
