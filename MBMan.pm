@@ -119,6 +119,18 @@ sub connect
         $notes->{'12_ServerCapa'}     = $s_capa;
 
     }
+    else {
+
+        # slurp
+        my $s_id = $imap->tag_and_run('ID NIL');
+
+        # transmutation
+        $s_id = &_chomp_str( ${$s_id}[1] );
+
+        # spit out
+        $notes->{'11_ServerIDTag'} = $s_id;
+
+    }
 
     $notes->{'00_Status'} = 'Connected';
     return 1;
@@ -162,14 +174,7 @@ sub login
     if ($debug) {
 
         my $capa = $imap->capability;
-        my ( $quota, $usage, $usage100 ) = $self->quota;
-        my $folders = $self->folders;
-
-        $notes->{'20_UserCapa'}     = $capa;
-        $notes->{'21_UserQuota'}    = $quota;
-        $notes->{'22_UserUsage'}    = $usage;
-        $notes->{'23_UserUsage100'} = $usage100;
-        $notes->{'24_UserFolders'}  = $folders;
+        $notes->{'20_UserCapa'} = $capa;
 
     }
 
@@ -183,6 +188,7 @@ sub quota
 {
     my $self     = shift;
     my $imap     = $self->{Imap};
+    my $notes    = $self->{Notes};
     my $quota    = 0;
     my $usage    = 0;
     my $usage100 = 0;
@@ -206,6 +212,11 @@ sub quota
     $usage    = "$usage";
     $quota    = "$quota";
     $usage100 = $usage / $quota * 100;
+
+    $notes->{'21_UserQuota'}    = $quota;
+    $notes->{'22_UserUsage'}    = $usage;
+    $notes->{'23_UserUsage100'} = $usage100;
+
     return ( $quota, $usage, $usage100 );
 
 }
@@ -216,8 +227,9 @@ sub folders
   #
 {
 
-    my $self = shift;
-    my $imap = $self->{Imap};
+    my $self  = shift;
+    my $imap  = $self->{Imap};
+    my $notes = $self->{Notes};
 
     return 0 unless $imap->IsAuthenticated;
 
@@ -238,8 +250,10 @@ sub folders
 
     }
 
-    $data->{Folders}  = $folders;
-    $data->{Specials} = $specials;
+    $notes->{'30_Folders'}  = $folders;
+    $notes->{'31_Specials'} = $specials;
+    $data->{Folders}        = $folders;
+    $data->{Specials}       = $specials;
     return $data;
 
 }
@@ -271,6 +285,7 @@ sub unshift_message
     my $expunge = $args->{Expunge};
     my $save    = $args->{Save};
     my $imap    = $self->{Imap};
+    my $notes   = $self->{Notes};
 
     return 0 unless $imap->IsAuthenticated;
     return 0 unless $imap->exists($mailbox);
@@ -282,13 +297,13 @@ sub unshift_message
 
     my $uid     = ${$uid_list}[0];
     my $message = $imap->message_string($uid);
-    $data->{'00_Message'}      = $message;
-    $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
-    $data->{'02_InternalDate'} = $imap->internaldate($uid);
-    $data->{'03_HeaderDate'}   = $imap->date($uid);
-    $data->{'04_ServerSize'}   = $imap->size($uid);
-    $data->{'05_ReceivedSize'} = length($message);
-    $data->{'06_MD5'}          = md5_hex($message);
+    $data->{'00_UidValidity'}  = $imap->uidvalidity($mailbox);
+    $data->{'01_InternalDate'} = $imap->internaldate($uid);
+    $data->{'02_HeaderDate'}   = $imap->date($uid);
+    $data->{'03_ServerSize'}   = $imap->size($uid);
+    $data->{'04_ReceivedSize'} = length($message);
+    $data->{'05_MD5'}          = md5_hex($message);
+    $data->{'10_Message'}      = $message;
 
     if ($expunge) {
 
@@ -298,6 +313,7 @@ sub unshift_message
 
     }
 
+    $notes->{'40_LastMessage'} = $data;
     return $data;
 
 }
@@ -315,9 +331,6 @@ sub limit_reached
     return 0 unless $imap->IsAuthenticated;
 
     my ( $quota, $usage, $usage100 ) = $self->quota;
-    $notes->{'21_UserQuota'}    = $quota;
-    $notes->{'22_UserUsage'}    = $usage;
-    $notes->{'23_UserUsage100'} = $usage100;
 
     return 0 if $usage100 lt $self->{Limit};
     return 1;
@@ -351,7 +364,8 @@ sub logout
 
     return 0 if $imap->IsConnected;
 
-    $notes->{Status} = 'Disconnected';
+    %{$notes} = ();
+    $notes->{'00_Status'} = 'Disconnected';
 
     return 1;
 
