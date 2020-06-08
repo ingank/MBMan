@@ -95,7 +95,7 @@ sub disconnect {
 
 sub print_status {
 
-    my $ax = $mbman->info;
+    my $ax = $mbman->notes;
     print Dumper $ax;
 
 }
@@ -104,28 +104,6 @@ sub folder_list {
 
     my $data = $mbman->folders;
     print Dumper $data;
-
-}
-
-sub print_account_info
-  #
-  # Allgemeine Infos über den IMAP-Server-Account ermitteln und ausgeben.
-  #
-{
-
-    my $info = $mbman->get_account_info;
-    print Dumper ($info);
-
-}
-
-sub print_messages_info
-  #
-  # Allgemeine Infos über das IMAP-Postfach ermitteln und ausgeben.
-  #
-{
-
-    my $info = $mbman->get_messages_info( Modus => 'Full', HashEnv => 1, DecodeMime => 1 );
-    print Dumper ($info);
 
 }
 
