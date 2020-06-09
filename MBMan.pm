@@ -14,7 +14,7 @@ use diagnostics;
 use feature qw(say);
 use Mail::IMAPClient;
 use Digest::MD5::File qw(md5_hex);    # MD5 Prüfsummen erzeugen
-use FileHandle;
+use FileHandle;                       # Einfache Dateioperationen
 
 #use Storable;
 #use Mail::IMAPClient::BodyStructure;
