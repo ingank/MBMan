@@ -403,7 +403,7 @@ sub database_exists
 
 sub save_message
   #
-  # Schreibe eine Nachricht in die Datenbank
+  # Schreibe die letzte abgerufene Nachricht in die Datenbank
   #
 {
 
