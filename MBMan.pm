@@ -43,13 +43,14 @@ sub new
 
         Debug    => 0,
         Ssl      => 1,
-        Peek     => 1,         # 1 = setze nicht das /SEEN Flag
-        Uid      => 1,         # nutze UID
+        Peek     => 1,          # 1 = setze nicht das /SEEN Flag
+        Uid      => 1,          # nutze UID
         Server   => '',
         User     => '',
         Password => '',
         Limit    => 80,
-        Folder   => 'MBData'
+        Folder   => 'MBData',
+        IdWidth  => 6
 
     };
 
