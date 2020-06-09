@@ -28,6 +28,8 @@ $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse    = 1;
 $Data::Dumper::Indent   = 1;
 
+# Client-/Server-Kommunikation
+
 sub new
   #
   # Konstruktor
@@ -366,7 +368,33 @@ sub logout
 
 }
 
-# Interne Funktionen
+# Dateiverwaltung
+
+sub new_database
+  #
+  # Erzeuge eine neue Datenbank für das Nachrichtenbackup
+  #
+{
+
+}
+
+sub database_exists
+  #
+  # Gebe WAHR zurück, wenn eine Datenbasis existiert
+  #
+{
+
+}
+
+sub save_message
+  #
+  # Schreibe eine Nachricht in die Datenbank
+  #
+{
+
+}
+
+# interne Funktionen
 
 sub _chomp_str
   #
