@@ -408,6 +408,36 @@ sub save_message
   #
 {
 
+    my $self   = shift;
+    my $folder = $self->{Folder} // 0;
+    my $user   = $self->{User} // 0;
+    my $notes  = $self->{Notes} // 0;
+
+    return 0 unless $folder && $user && $notes;
+
+    my $message = $notes->{'40_LastMessage'} // 0;
+
+    return 0 unless $message;
+
+    my $uidval = $message->{'00_UidValidity'} // 0;
+    my $md5    = $message->{'05_MD5'}         // 0;
+    my $text   = $message->{'10_Message'}     // 0;
+
+    return 0 unless $uidval && $md5 && $text;
+
+    chdir || die('Kann nicht in das Home-Verzeichnis wechseln');
+
+    return 0 unless ( -d $folder );
+
+    chdir $folder || die('Kann nicht in die Datenbank wechseln');
+
+    # Ab hier befinden wir uns in der Datenbank
+
+    my $filename = $md5;
+    my $handle = FileHandle->new( $filename, "w" );
+    print $handle $text;
+    undef $handle;
+
 }
 
 # interne Funktionen
