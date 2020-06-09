@@ -435,12 +435,18 @@ sub save_message
 
     chdir $folder || die('Kann nicht in die Datenbank wechseln');
 
-    # Ab hier befinden wir uns in der Datenbank
+    mkdir( $user, 0755 ) unless ( -d $user );
+    chdir $user || die('Kann nicht in den Benutzerzweig wechseln');
 
-    my $filename = $md5;
+    my $filename = $uidval;
+    $filename .= " - " . ( sprintf "%0" . $width . "d", $uid );
+    $filename .= ".eml";
     my $handle = FileHandle->new( $filename, "w" );
     print $handle $text;
     undef $handle;
+
+    return 0 unless ( -f $filename );
+    return 1;
 
 }
 
