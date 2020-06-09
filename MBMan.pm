@@ -12,16 +12,17 @@ our $VERSION = '0.0.3';
 use warnings;
 use diagnostics;
 use feature qw(say);
-use Storable;
 use Mail::IMAPClient;
-use Mail::IMAPClient::BodyStructure;
+use Digest::MD5::File qw(md5_hex);    # MD5 Prüfsummen erzeugen
+use FileHandle;
 
+#use Storable;
+#use Mail::IMAPClient::BodyStructure;
 #use Mail::Header;
 #use Email::Address;
 #use Date::Manip;                      # Zeitangaben parsen
-use MIME::Words qw(:all);                 # Mime decodieren
-use Digest::MD5::File qw(md5_hex);        # MD5 Prüfsummen erzeugen
-use Data::Structure::Util qw(unbless);    # Datenbasis eines Objektes extrahieren
+#use MIME::Words qw(:all);                 # Mime decodieren
+#use Data::Structure::Util qw(unbless);    # Datenbasis eines Objektes extrahieren
 
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
