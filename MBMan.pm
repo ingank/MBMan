@@ -12,21 +12,24 @@ our $VERSION = '0.0.3';
 use warnings;
 use diagnostics;
 use feature qw(say);
-use Storable;
 use Mail::IMAPClient;
-use Mail::IMAPClient::BodyStructure;
+use Digest::MD5::File qw(md5_hex);    # MD5 Prüfsummen erzeugen
+use FileHandle;                       # Einfache Dateioperationen
 
+#use Storable;
+#use Mail::IMAPClient::BodyStructure;
 #use Mail::Header;
 #use Email::Address;
 #use Date::Manip;                      # Zeitangaben parsen
-use MIME::Words qw(:all);                 # Mime decodieren
-use Digest::MD5::File qw(md5_hex);        # MD5 Prüfsummen erzeugen
-use Data::Structure::Util qw(unbless);    # Datenbasis eines Objektes extrahieren
+#use MIME::Words qw(:all);                 # Mime decodieren
+#use Data::Structure::Util qw(unbless);    # Datenbasis eines Objektes extrahieren
 
 use Data::Dumper;
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse    = 1;
 $Data::Dumper::Indent   = 1;
+
+# Client-/Server-Kommunikation
 
 sub new
   #
@@ -38,15 +41,16 @@ sub new
 
     my $self = {
 
-        Debug     => 0,
-        Ssl       => 1,
-        Peek      => 1,           # 1 = setze nicht das /SEEN Flag
-        Uid       => 1,           # nutze UID
-        Server    => '',
-        User      => '',
-        Password  => '',
-        Limit     => 80,
-        Directory => '~/MBData'
+        Debug    => 0,
+        Ssl      => 1,
+        Peek     => 1,          # 1 = setze nicht das /SEEN Flag
+        Uid      => 1,          # nutze UID
+        Server   => '',
+        User     => '',
+        Password => '',
+        Limit    => 80,
+        Folder   => 'MBData',
+        IdWidth  => 6
 
     };
 
@@ -121,13 +125,8 @@ sub connect
     }
     else {
 
-        # slurp
         my $s_id = $imap->tag_and_run('ID NIL');
-
-        # transmutation
         $s_id = &_chomp_str( ${$s_id}[1] );
-
-        # spit out
         $notes->{'11_ServerIDTag'} = $s_id;
 
     }
@@ -297,12 +296,13 @@ sub unshift_message
 
     my $uid     = ${$uid_list}[0];
     my $message = $imap->message_string($uid);
-    $data->{'00_UidValidity'}  = $imap->uidvalidity($mailbox);
-    $data->{'01_InternalDate'} = $imap->internaldate($uid);
-    $data->{'02_HeaderDate'}   = $imap->date($uid);
-    $data->{'03_ServerSize'}   = $imap->size($uid);
-    $data->{'04_ReceivedSize'} = length($message);
-    $data->{'05_MD5'}          = md5_hex($message);
+    $data->{'00_Uid'}          = $uid;
+    $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
+    $data->{'02_InternalDate'} = $imap->internaldate($uid);
+    $data->{'03_HeaderDate'}   = $imap->date($uid);
+    $data->{'04_ServerSize'}   = $imap->size($uid);
+    $data->{'05_ReceivedSize'} = length($message);
+    $data->{'06_MD5'}          = md5_hex($message);
     $data->{'10_Message'}      = $message;
 
     if ($expunge) {
@@ -371,7 +371,86 @@ sub logout
 
 }
 
-# Interne Funktionen
+# Dateiverwaltung
+
+sub new_database
+  #
+  # Erzeuge eine neue Datenbank für das Nachrichtenbackup
+  #
+{
+
+    my $self   = shift;
+    my $folder = $self->{Folder};
+
+    chdir;
+    return 1 if ( -d $folder );
+    mkdir( $folder, 0755 ) || die;
+    return 0 if ( -d $folder );
+    return
+
+}
+
+sub database_exists
+  #
+  # Gebe WAHR zurück, wenn eine Datenbasis existiert
+  #
+{
+
+    my $self   = shift;
+    my $folder = $self->{Folder};
+
+    chdir;
+    return ( -d $folder );
+
+}
+
+sub save_message
+  #
+  # Schreibe die letzte abgerufene Nachricht in die Datenbank
+  #
+{
+
+    my $self   = shift;
+    my $folder = $self->{Folder} // 0;
+    my $user   = $self->{User} // 0;
+    my $notes  = $self->{Notes} // 0;
+    my $width  = $self->{IdWidth} // 0;
+
+    return 0 unless $folder && $user && $notes && $width;
+
+    my $message = $notes->{'40_LastMessage'} // 0;
+
+    return 0 unless $message;
+
+    my $uid    = $message->{'00_Uid'}         // 0;
+    my $uidval = $message->{'01_UidValidity'} // 0;
+    my $md5    = $message->{'06_MD5'}         // 0;
+    my $text   = $message->{'10_Message'}     // 0;
+
+    return 0 unless $uid && $uidval && $md5 && $text;
+
+    chdir || die('Kann nicht in das Home-Verzeichnis wechseln');
+
+    return 0 unless ( -d $folder );
+
+    chdir $folder || die('Kann nicht in die Datenbank wechseln');
+
+    mkdir( $user, 0755 ) unless ( -d $user );
+    chdir $user || die('Kann nicht in den Benutzerzweig wechseln');
+
+    my $filename = $uidval;
+    $filename .= " - " . ( sprintf "%0" . $width . "d", $uid );
+    $filename .= ".eml";
+    my $handle = FileHandle->new( $filename, "w" );
+    print $handle $text;
+    undef $handle;
+
+    return 0 unless ( -f $filename );
+    return 1;
+
+}
+
+# interne Funktionen
 
 sub _chomp_str
   #
