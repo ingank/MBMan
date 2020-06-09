@@ -414,18 +414,20 @@ sub save_message
     my $folder = $self->{Folder} // 0;
     my $user   = $self->{User} // 0;
     my $notes  = $self->{Notes} // 0;
+    my $width  = $self->{IdWidth} // 0;
 
-    return 0 unless $folder && $user && $notes;
+    return 0 unless $folder && $user && $notes && $width;
 
     my $message = $notes->{'40_LastMessage'} // 0;
 
     return 0 unless $message;
 
-    my $uidval = $message->{'00_UidValidity'} // 0;
-    my $md5    = $message->{'05_MD5'}         // 0;
+    my $uid    = $message->{'00_Uid'}         // 0;
+    my $uidval = $message->{'01_UidValidity'} // 0;
+    my $md5    = $message->{'06_MD5'}         // 0;
     my $text   = $message->{'10_Message'}     // 0;
 
-    return 0 unless $uidval && $md5 && $text;
+    return 0 unless $uid && $uidval && $md5 && $text;
 
     chdir || die('Kann nicht in das Home-Verzeichnis wechseln');
 
