@@ -376,6 +376,15 @@ sub new_database
   #
 {
 
+    my $self   = shift;
+    my $folder = $self->{Folder};
+
+    chdir;
+    return 1 if ( -d $folder );
+    mkdir( $folder, 0755 ) || die;
+    return 0 if ( -d $folder );
+    return
+
 }
 
 sub database_exists
