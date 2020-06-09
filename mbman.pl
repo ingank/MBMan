@@ -36,6 +36,7 @@ our $opt_f = 0;     # folder list
 our $opt_q = 0;     # quota
 our $opt_u = 0;     # unshift message
 our $opt_d = 0;     # new database
+our $opt_s = 0;     # save message
 
 our $mbman = undef;
 
@@ -45,7 +46,7 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hveclfqud');
+        getopts('S:U:P:hveclfquds');
         $opt_h and do { &print_help(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v );
@@ -56,12 +57,13 @@ sub main {
         $opt_q and do { &quota };
         $opt_u and do { &unshift_message };
         $opt_d and do { &new_database };
+        $opt_s and do { &save_message };
 
         &print_status;
 
         &disconnect;
 
-        &print_status;
+        #       &print_status;
 
     }
 
@@ -132,6 +134,14 @@ sub new_database
 {
 
     $mbman->new_database;
+
+}
+
+sub save_message
+  #
+{
+
+    $mbman->save_message;
 
 }
 
