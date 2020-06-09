@@ -59,7 +59,7 @@ sub main {
         $opt_d and do { &new_database };
         $opt_s and do { &save_message };
 
-        &print_status;
+     #   &print_status;
 
         &disconnect;
 
@@ -141,7 +141,7 @@ sub save_message
   #
 {
 
-    $mbman->save_message;
+    say "erfolgreich geschrieben" if $mbman->save_message;
 
 }
 
