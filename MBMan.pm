@@ -296,12 +296,13 @@ sub unshift_message
 
     my $uid     = ${$uid_list}[0];
     my $message = $imap->message_string($uid);
-    $data->{'00_UidValidity'}  = $imap->uidvalidity($mailbox);
-    $data->{'01_InternalDate'} = $imap->internaldate($uid);
-    $data->{'02_HeaderDate'}   = $imap->date($uid);
-    $data->{'03_ServerSize'}   = $imap->size($uid);
-    $data->{'04_ReceivedSize'} = length($message);
-    $data->{'05_MD5'}          = md5_hex($message);
+    $data->{'00_Uid'}          = $uid;
+    $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
+    $data->{'02_InternalDate'} = $imap->internaldate($uid);
+    $data->{'03_HeaderDate'}   = $imap->date($uid);
+    $data->{'04_ServerSize'}   = $imap->size($uid);
+    $data->{'05_ReceivedSize'} = length($message);
+    $data->{'06_MD5'}          = md5_hex($message);
     $data->{'10_Message'}      = $message;
 
     if ($expunge) {
