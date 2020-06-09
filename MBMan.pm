@@ -121,13 +121,8 @@ sub connect
     }
     else {
 
-        # slurp
         my $s_id = $imap->tag_and_run('ID NIL');
-
-        # transmutation
         $s_id = &_chomp_str( ${$s_id}[1] );
-
-        # spit out
         $notes->{'11_ServerIDTag'} = $s_id;
 
     }
