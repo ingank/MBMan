@@ -393,6 +393,12 @@ sub database_exists
   #
 {
 
+    my $self   = shift;
+    my $folder = $self->{Folder};
+
+    chdir;
+    return ( -d $folder );
+
 }
 
 sub save_message
