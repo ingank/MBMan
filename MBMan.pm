@@ -169,8 +169,7 @@ sub login
 
     $imap->User($user);
     $imap->Password($pass);
-    $imap->Authmechanism('CRAM-MD5')   if $imap->has_capability('AUTH=CRAM-MD5');
- #   $imap->Authmechanism('DIGEST-MD5') if $imap->has_capability('AUTH=DIGEST-MD5');
+    $imap->Authmechanism('CRAM-MD5');
     $imap->login;
 
     return 0 unless $imap->IsAuthenticated;
