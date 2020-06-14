@@ -131,8 +131,6 @@ sub connect
 
     }
 
-    $imap->Showcredentials(1);
-
     $notes->{'00_Status'} = 'Connected';
     return 1;
 
