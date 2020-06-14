@@ -1,38 +1,72 @@
+=encoding utf8
 
 =head1 NAME
- 
-    MBMan - Eine IMAP Mailboxmanagement API in Perl.
+
+MBMan - Eine IMAP Mailboxmanagement API.
 
 =head1 ANWENDUNG
 
-    use MBMan;
-    use Data::Dumper;
+use MBMan;
 
-    my $mbman = MBMan->new(
-        Debug     => 0,
-        Ssl       => 1,
-        Peek      => 1,
-        Uid       => 1,
-        Directory => '~/MBData'
-    );
+my $mbman = MBMan->new();
 
-    $mbman->connect( Server => 'server.tld' );
+$mbman->connect(
+    Server => 'imap.server.tld'
+);
 
-    $mbman->login(
-        User => 'user@domain.tld',
-        Password => 'pa$$w0rd'
-    );
+$mbman->login(
+    User => 'user@domain.tld',
+    Password => 'pa$$w0rd'
+);
 
-    my $sinfo = $mbman->get_server_info();
+$mbman->new_database();
 
-    print Dumper ($sinfo);
+$mbman->unshift_message() if mbman->limit_reached();
 
-    my $minfo = $mbman->get_messages_info(
-        Modus => 'Full',
-        HashEnv => 1,
-        DecodeMime => 1
-    );
+$mbman->logout();
 
-    print Dumper ($minfo);
 
-    $mbman->logout();
+=head1 OBJEKT-METHODEN
+
+In diesem Kapitel sind die Methoden aufgeführt, die auf ein MBMan-Objekt
+angewandt werden können.
+
+=head2 new
+
+Erzeuge ein MBMan - Objekt.
+
+Beispiel:
+
+  my $mbman = MBMan->new(%args) || die "new failed: $@\n";
+
+=head2 connect
+
+Verbinde mit einem IMAP4-Server.
+
+Beispiel:
+
+  $mbman->connect(
+      Server => 'imap.server.tld'
+  ) || die "Connection failed: $@\n";
+
+=head2 login
+
+=head2 unshift_message
+
+=head2 limit_reached
+
+=head2 logout
+
+=head2 save_massage
+
+=head2 folders
+
+=head2 quota
+
+=head2 notes
+
+=head2 new_database
+
+=head2 database_exists
+
+=cut
