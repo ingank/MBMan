@@ -6,24 +6,24 @@ MBMan - Eine IMAP Mailboxmanagement API.
 
 =head1 ANWENDUNG
 
-use MBMan;
+    use MBMan;
 
-my $mbman = MBMan->new();
+    my $mbman = MBMan->new();
 
-$mbman->connect(
-    Server => 'imap.server.tld'
-);
+    $mbman->connect(
+        Server => 'imap.server.tld'
+    );
 
-$mbman->login(
-    User => 'user@domain.tld',
-    Password => 'pa$$w0rd'
-);
+    $mbman->login(
+        User => 'user@domain.tld',
+        Password => 'pa$$w0rd'
+    );
 
-$mbman->new_database();
+    $mbman->new_database();
 
-$mbman->unshift_message() if mbman->limit_reached();
+    $mbman->unshift_message() if mbman->limit_reached();
 
-$mbman->logout();
+    $mbman->logout();
 
 
 =head1 OBJEKT-METHODEN
@@ -37,7 +37,7 @@ Erzeuge ein MBMan - Objekt.
 
 Beispiel:
 
-  my $mbman = MBMan->new(%args) || die "new failed: $@\n";
+    my $mbman = MBMan->new(%args) || die "new failed: $@\n";
 
 =head2 connect
 
@@ -45,9 +45,9 @@ Verbinde mit einem IMAP4-Server.
 
 Beispiel:
 
-  $mbman->connect(
-      Server => 'imap.server.tld'
-  ) || die "Connection failed: $@\n";
+    $mbman->connect(
+        Server => 'imap.server.tld'
+    ) || die "Connection failed: $@\n";
 
 =head2 login
 
