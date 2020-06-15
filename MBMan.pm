@@ -163,9 +163,11 @@ sub login
     return 0 unless $imap->IsConnected;
     return 0 unless $user;
     return 0 unless $pass;
+    return 0 unless $imap->has_capability('AUTH=CRAM-MD5');
 
     $imap->User($user);
     $imap->Password($pass);
+    $imap->Authmechanism('CRAM-MD5');
     $imap->login;
 
     return 0 unless $imap->IsAuthenticated;
