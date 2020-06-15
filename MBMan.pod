@@ -37,7 +37,7 @@ Erzeuge ein MBMan - Objekt.
 
 Beispiel:
 
-    my $mbman = MBMan->new(%args) || die "new failed: $@\n";
+    my $mbman = MBMan->new( %args ) || die "new failed: $@\n";
 
 =head2 connect
 
@@ -45,28 +45,105 @@ Verbinde mit einem IMAP4-Server.
 
 Beispiel:
 
-    $mbman->connect(
-        Server => 'imap.server.tld'
-    ) || die "Connection failed: $@\n";
+    $mbman->connect( Server => 'imap.server.tld' ) 
+        or die "Connection failed: $@\n";
 
 =head2 login
 
+Benutzer-Login auf einem IMAP4-Server.
+
+Beispiel:
+
+    $mbman->login(
+        User => 'user@hoster.tld',
+        Password => 'Pa$$w0rd'
+    )
+
 =head2 unshift_message
+
+Die älteste Nachricht einer Mailbox herunterladen. Der Schalter 'Expunge' gibt
+an, ob die Nachricht nach dem Laden auf dem IMAP-Server gelöscht werden soll.
+Die Voreinstellung für diesen Schalter ist '0' ( nicht löschen ). Auf die
+Nachricht kann später über die Methoden 'notes' oder 'save_message'
+zugegriffen werden.
+
+Beispiel:
+
+    $mbman->unshift_message( Expunge => 1 );
+
 
 =head2 limit_reached
 
+Überprüfen, ob das Limit einer Mailbox überschritten wurde. Das
+voreingestellte Limit beträgt 80%. Das Limit kann in der Methode 'new'
+überschrieben werden.
+
+Beispiel:
+
+    $mbman->unshift_message( Expunge => 1 ) if $mbman->limit_reached();
+
 =head2 logout
+
+Trennen der Verbindung zum IMAP-Server. Die bisher gesammelten Daten
+bleiben jedoch erhalten; ein Wieder-Login ist sofort ohne Angabe der
+Zugangsdaten möglich.
+
+Beispiel:
+
+    $mbman->logout();
 
 =head2 save_massage
 
+Speichere die letzte geladene Nachricht innerhalb der Datenbank.
+
+Beispiel:
+
+    $mbman->save_message();
+
 =head2 folders
+
+Gib die Mailboxen des aktuellen IMAP-Benutzers als ARRAY_REF zurück.
+
+Beispiel:
+
+    my $mboxes = $mbman->folders();
 
 =head2 quota
 
+Gib einen schnellen Überblick über die Füllung eines Nutzerkontos.
+
+Beispiel:
+
+    my ( $quota, $usage, $usage100 ) = $mbman->quota();
+
 =head2 notes
+
+Gib interessante Infos zum bisherigen Datenaustausch mit dem IMAP4-Server.
+Über die Methode 'notes' kann auch auf die zuletzt heruntergeladene Nachricht
+zugegriffen werden.
+
+Tip: Mit einem gängigen Data-Dumper-Modul können die Daten-Felder
+unkompliziert inspiziert werden.
+
+Besipiel:
+
+    my $notes = $mbman->notes();
 
 =head2 new_database
 
+Erstelle eine neue Datenbasis der textbasierten Datenbank zur Speicherung von
+Nachrichten, WENN sie noch nicht existiert.
+
+Beispiel:
+
+    $mbman->new_database();
+
 =head2 database_exists
+
+Überprüfe, ob eine Datenbasis für den aktuellen System-Benutzer existiert.
+
+Beispiel:
+
+    print "Datenbasis existiert\n" if $mbman->database_exists();
 
 =cut
