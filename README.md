@@ -1,6 +1,14 @@
 # MBMan
 MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
+## Abhängigkeiten
+
+### Perl-Module
+
+* Mail::IMAPClient
+* Digest::MD5::File
+* FileHandle
+
 ## RFCs zum IMAP4-Protokoll
 * [RFC1730](https://tools.ietf.org/html/rfc1730) 
   * INTERNET MESSAGE ACCESS PROTOCOL - VERSION 4
