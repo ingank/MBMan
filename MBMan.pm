@@ -50,7 +50,8 @@ sub new
         Password => '',
         Limit    => 80,
         Folder   => 'MBData',
-        IdWidth  => 6
+        IdWidth  => 6,
+        MaxSize  => 0
 
     };
 
@@ -163,9 +164,11 @@ sub login
     return 0 unless $imap->IsConnected;
     return 0 unless $user;
     return 0 unless $pass;
+    return 0 unless $imap->has_capability('AUTH=CRAM-MD5');
 
     $imap->User($user);
     $imap->Password($pass);
+    $imap->Authmechanism('CRAM-MD5');
     $imap->login;
 
     return 0 unless $imap->IsAuthenticated;
@@ -285,6 +288,7 @@ sub unshift_message
     my $save    = $args->{Save};
     my $imap    = $self->{Imap};
     my $notes   = $self->{Notes};
+    my $maxsize = $self->{MaxSize};
 
     return 0 unless $imap->IsAuthenticated;
     return 0 unless $imap->exists($mailbox);
@@ -294,13 +298,22 @@ sub unshift_message
 
     return 0 unless scalar @{$uid_list};
 
-    my $uid     = ${$uid_list}[0];
+    my $uid  = ${$uid_list}[0];
+    my $size = $imap->size($uid);
+
+    if ($maxsize) {
+
+        return 0 if $size > $maxsize;
+
+    }
+
     my $message = $imap->message_string($uid);
+
     $data->{'00_Uid'}          = $uid;
     $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
     $data->{'02_InternalDate'} = $imap->internaldate($uid);
     $data->{'03_HeaderDate'}   = $imap->date($uid);
-    $data->{'04_ServerSize'}   = $imap->size($uid);
+    $data->{'04_ServerSize'}   = $imap->$size;
     $data->{'05_ReceivedSize'} = length($message);
     $data->{'06_MD5'}          = md5_hex($message);
     $data->{'10_Message'}      = $message;
