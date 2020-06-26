@@ -1,13 +1,17 @@
 # MBMan
 MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
-## Abhängigkeiten
+## Installation
+```
+$ git clone git@github.com:ingank/MBMan.git
+```
 
-### Perl-Module
-
-* Mail::IMAPClient
-* Digest::MD5::File
-* FileHandle
+## Abhängigkeiten auflösen
+```
+$ sudo cpan install Mail::IMAPClient
+$ sudo cpan Digest::MD5::File
+$ sudo cpan install FileHandle
+```
 
 ## RFCs zum IMAP4-Protokoll
 * [RFC1730](https://tools.ietf.org/html/rfc1730) 
@@ -18,9 +22,6 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
   * ersetzt durch [RFC3501](https://tools.ietf.org/html/rfc3501)
 * [RFC3501](https://tools.ietf.org/html/rfc3501)
   * INTERNET MESSAGE ACCESS PROTOCOL - VERSION 4rev1
-
----
-
 * [RFC6154](https://tools.ietf.org/html/rfc6154)
   * IMAP LIST Extension for Special-Use Mailboxes
   * Es geht um spezielle Mailboxen ( \Drafts, \Junk, \Trash, ... )
@@ -33,7 +34,7 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 * [RFC1731](https://tools.ietf.org/html/rfc1731)
   * IMAP4 Authentication Mechanisms
 
-## Einführung IMAP4
+## Nomenklatur und Logik des IMAP4-Protokolls
 
 * User / Nutzer
   * Ein menschlicher Benutzer.
@@ -86,5 +87,7 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
     * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `EXAMINE` herbeigeführt:
       * Auf die Mailbox kann ausschließlich lesend zugegriffen werden.
 
-## IMAP4 Implementationen
-* [RFCs Supported by Cyrus IMAP](https://github.com/cyrusimap/cyrus-imapd/blob/master/docsrc/imap/rfc-support.rst)
+## IMAP4-Server-Implementationen
+* [Cyrus IMAP](https://www.cyrusimap.org/) || [RFCs Supported by Cyrus IMAP](https://github.com/cyrusimap/cyrus-imapd/blob/master/docsrc/imap/rfc-support.rst)
+* [Courier Mail Server](https://www.courier-mta.org/) || [Courier IMAP](https://www.courier-mta.org/imap/)
+* [Dovecot IMAP and POP3 email server](https://doc.dovecot.org/)
