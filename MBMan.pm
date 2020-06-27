@@ -115,8 +115,8 @@ sub connect
         my $s_capa = $imap->capability;
 
         # transmutation
-        $s_resp = &_chomp_str($s_resp);
-        $s_id   = &_chomp_str( ${$s_id}[1] );
+        $s_resp = &_str_chomp($s_resp);
+        $s_id   = &_str_chomp( ${$s_id}[1] );
 
         # spit out
         $notes->{'10_ServerResponse'} = $s_resp;
@@ -127,7 +127,7 @@ sub connect
     else {
 
         my $s_id = $imap->tag_and_run('ID NIL');
-        $s_id = &_chomp_str( ${$s_id}[1] );
+        $s_id = &_str_chomp( ${$s_id}[1] );
         $notes->{'11_ServerIDTag'} = $s_id;
 
     }
@@ -260,7 +260,7 @@ sub folders
 
 }
 
-sub unshift_message
+sub message_unshift
   #
   # Holt die älteste Nachricht eines Postfaches vom Server
   #
@@ -386,7 +386,7 @@ sub logout
 
 # Dateiverwaltung
 
-sub new_database
+sub database_new
   #
   # Erzeuge eine neue Datenbank für das Nachrichtenbackup
   #
@@ -417,7 +417,7 @@ sub database_exists
 
 }
 
-sub save_message
+sub message_save
   #
   # Schreibe die letzte abgerufene Nachricht in die Datenbank
   #
@@ -465,7 +465,7 @@ sub save_message
 
 # interne Funktionen
 
-sub _chomp_str
+sub _str_chomp
   #
 {
 
@@ -478,7 +478,7 @@ sub _chomp_str
 
 }
 
-sub _chomp_array
+sub _array_chomp
   #
 {
 
@@ -487,13 +487,13 @@ sub _chomp_array
 
     return unless scalar @{$array};
 
-    push @{$out}, _chomp_str($_) for @{$array};
+    push @{$out}, _str_chomp($_) for @{$array};
 
     return $out;
 
 }
 
-sub _filter_array
+sub _array_filter
   #
 {
 
