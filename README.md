@@ -1,4 +1,5 @@
 # MBMan
+
 MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
 ## Installation
@@ -6,12 +7,17 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 $ git clone git@github.com:ingank/MBMan.git
 ```
 
-## Abhängigkeiten auflösen
+## Abhängigkeiten
 ```
-$ sudo cpan install Mail::IMAPClient
-$ sudo cpan Digest::MD5::File
-$ sudo cpan install FileHandle
+cpan install Mail::IMAPClient
+cpan Digest::MD5::File
+cpan install FileHandle
 ```
+## Anwendung
+```
+```
+
+---
 
 ## RFCs zum IMAP4-Protokoll
 * [RFC1730](https://tools.ietf.org/html/rfc1730) 
