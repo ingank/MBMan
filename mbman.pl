@@ -19,9 +19,12 @@ $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse    = 1;
 $Data::Dumper::Indent   = 1;
 
-my @messages = (
-    'mbman.pl erwartet einen Befehl. Hilfe über "mbman.pl -h"!',
-    'mbman.pl erwartet Argumente. Hilfe über "mbman.pl -h"!'
+my %messages = (
+
+    need_command => 'mbman.pl erwartet einen Befehl. Hilfe über "mbman.pl -h"!',
+    need_args    => 'mbman.pl erwartet Argumente. Hilfe über "mbman.pl -h"!',
+    saved        => 'Nachricht wurde erfolgreich gespeichert'
+
 );
 
 our $opt_S = '';    # server name
@@ -37,6 +40,7 @@ our $opt_q = 0;     # quota
 our $opt_u = 0;     # unshift message
 our $opt_d = 0;     # new database
 our $opt_s = 0;     # save message
+our $opt_i = 0;     # print info at max collector level
 
 our $mbman = undef;
 
@@ -46,24 +50,68 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hveclfquds');
-        $opt_h and do { &print_help(); return 1 };
+        getopts('S:U:P:hveclfqudsi');
+        $opt_h and do { help_print(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v );
 
-        $opt_c and do { &connect };
-        $opt_l and do { &login };
-        $opt_f and do { &folders };
-        $opt_q and do { &quota };
-        $opt_u and do { &unshift_message };
-        $opt_d and do { &new_database };
-        $opt_s and do { &save_message };
+        if ( $opt_c and $opt_S ) {
 
-     #   &print_status;
+            $mbman->connect( Server => $opt_S );
 
-        &disconnect;
+        }
 
-        #       &print_status;
+        if ( $opt_l and $opt_U and $opt_P ) {
+
+            $mbman->login(
+                User     => $opt_U,
+                Password => $opt_P,
+            );
+
+        }
+
+        if ($opt_f) {
+
+            $mbman->folders;
+
+        }
+
+        if ($opt_q) {
+
+            $mbman->quota;
+
+        }
+
+        if ($opt_u) {
+
+            $mbman->message_unshift( Expunge => $opt_e );
+
+        }
+
+        if ($opt_d) {
+
+            $mbman->database_new;
+
+        }
+
+        if ($opt_s) {
+
+            say $messages{saved} if $mbman->message_save;
+
+        }
+
+        if ($opt_i) {
+
+            &status_print;
+
+        }
+
+        $mbman->logout();
+
+    }
+    else {
+
+        say $messages{need_command};
 
     }
 
@@ -71,92 +119,14 @@ sub main {
 
 }
 
-sub connect {
-
-    if ($opt_S) {
-
-        $mbman->connect( Server => $opt_S );
-
-    }
-
-}
-
-sub login {
-
-    if ( $opt_U and $opt_P ) {
-
-        $mbman->login(
-            User     => $opt_U,
-            Password => $opt_P,
-        );
-
-    }
-
-}
-
-sub disconnect {
-
-    $mbman->logout();
-
-}
-
-sub print_status {
+sub status_print {
 
     my $ax = $mbman->notes;
     print Dumper $ax;
 
 }
 
-sub folders {
-
-    $mbman->folders;
-
-}
-
-sub quota {
-
-    $mbman->quota;
-
-}
-
-sub unshift_message
-  #
-  #
-  #
-{
-
-    $mbman->unshift_message( Expunge => $opt_e );
-
-}
-
-sub new_database
-  #
-{
-
-    $mbman->new_database;
-
-}
-
-sub save_message
-  #
-{
-
-    say "erfolgreich geschrieben" if $mbman->save_message;
-
-}
-
-sub print_info
-  #
-  # Ausgabe von Hinweisen für den Benutzer
-  #
-{
-
-    my $m = shift;
-    say $messages[$m];
-
-}
-
-sub print_help
+sub help_print
   #
   # Ausgabe der internen POD ( Plain Old Documentation ) des Programms
   #
