@@ -313,7 +313,7 @@ sub message_unshift
     $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
     $data->{'02_InternalDate'} = $imap->internaldate($uid);
     $data->{'03_HeaderDate'}   = $imap->date($uid);
-    $data->{'04_ServerSize'}   = $imap->$size;
+    $data->{'04_ServerSize'}   = $size;
     $data->{'05_ReceivedSize'} = length($message);
     $data->{'06_MD5'}          = md5_hex($message);
     $data->{'10_Message'}      = $message;
