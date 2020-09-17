@@ -19,9 +19,12 @@ $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse    = 1;
 $Data::Dumper::Indent   = 1;
 
-my @messages = (
-    'mbman.pl erwartet einen Befehl. Hilfe über "mbman.pl -h"!',
-    'mbman.pl erwartet Argumente. Hilfe über "mbman.pl -h"!'
+my %messages = (
+
+    need_command => 'mbman.pl erwartet einen Befehl. Hilfe über "mbman.pl -h"!',
+    need_args    => 'mbman.pl erwartet Argumente. Hilfe über "mbman.pl -h"!',
+    saved        => 'Nachricht wurde erfolgreich gespeichert'
+
 );
 
 our $opt_S = '';    # server name
@@ -37,6 +40,7 @@ our $opt_q = 0;     # quota
 our $opt_u = 0;     # unshift message
 our $opt_d = 0;     # new database
 our $opt_s = 0;     # save message
+our $opt_i = 0;     # print info at max collector level
 
 our $mbman = undef;
 
@@ -46,7 +50,7 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hveclfquds');
+        getopts('S:U:P:hveclfqudsi');
         $opt_h and do { help_print(); return 1 };
 
         $mbman = MBMan->new( Debug => $opt_v );
@@ -80,25 +84,34 @@ sub main {
 
         if ($opt_u) {
 
-            $mbman->unshift_message( Expunge => $opt_e );
+            $mbman->message_unshift( Expunge => $opt_e );
 
         }
 
         if ($opt_d) {
 
-            $mbman->new_database;
+            $mbman->database_new;
 
         }
 
         if ($opt_s) {
 
-            say "erfolgreich geschrieben" if $mbman->save_message;
+            say $messages{saved} if $mbman->message_save;
 
         }
 
-        &status_print;
+        if ($opt_i) {
+
+            &status_print;
+
+        }
 
         $mbman->logout();
+
+    }
+    else {
+
+        say $messages{need_command};
 
     }
 
