@@ -31,9 +31,6 @@ $mbman->new_database();
 $mbman->unshift_message() if mbman->limit_reached();
 $mbman->logout();
 ```
-
----
-
 ## Lokales Backup inspizieren
 MBMan kann ein lokales Backup der auf einem IMAP-Server befindlichen Nachrichten anfertigen.
 Die einzelnen Nachrichten werden im sogennanten EML-Format in lokalen Ordnern abgelegt.
@@ -66,7 +63,7 @@ Vorgehensweise sinnvoll sein:
 * Vorteile:
   * Schnelle Suchen und Filter anwenden.
   * Stabile Dekodierung von MIME-codierten Nachrichten.
-  * Nochmalige automatische Kopie der Original-Nachrichten beim Importieren. Dadurch wird die Gefahr eines Dtaneverlustes minimiert.
+  * Nochmalige automatische Kopie der Original-Nachrichten beim Importieren. Dadurch wird die Gefahr eines Datenverlustes minimiert.
 * Nachteile:
   * Das Importieren kostet zusätzlich Zeit und Festplattenplatz.
 
