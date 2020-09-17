@@ -64,19 +64,18 @@ $mbman->logout();
     * Die Nutzerkennung ist eine dem IMAP-Server bekannte Zeichenfolge für einen Nutzer.
   * Mailbox / Postfach
     * Dem Nutzer sind Postfächer zugeordnet.
-  * Access Control List (ACL) / Zugriffskontrolle
-    * Der Zugriff des Nutzers auf bestimmte Ressourcen kann mit Hilfe der Zugriffskontrolle geregelt sein.
+    * Ein Postfach kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden.
+    * Das Standard-Postfach trägt den Namen *INBOX*.
+    * Jede Nachricht ist einem bestimmten Postfach zugeordnet.
+    * Es können untergeordnete Postfächer erstellt werden.
+    * Untergeordnete Postfächer werden durch ein vom IMAP4-Server festgelegtes Zeichen (engl.: Delimiter) getrennt. Beispiel: *INBOX.Foo*
+  * Access Control List (ACL) / Zugriffskontroll-Liste
+    * Der Zugriff des Nutzers auf bestimmte Ressourcen kann mit Hilfe von ACLs (Zugriffskontroll-Listen) geregelt sein.
   * Quota / Kontingent
     * Der Speicherplatz für Nachrichten kann mit Hilfe von Quotas kontingentiert werden.
-* Mailbox / Postfach im Speziellen:
-  * Ein Postfach kann als Ordner innerhalb eines Nutzerkontos aufgefasst werden.
-  * Das Standard-Postfach trägt den Namen *INBOX*.
-  * Jede Nachricht ist einem bestimmten Postfach zugeordnet.
-  * Es können untergeordnete Postfächer erstellt werden.
-  * Untergeordnete Mailboxen werden durch ein vom IMAP4-Server festgelegtes Zeichen (engl.: Delimiter) getrennt. Beispiel: *INBOX.Foo*
 * Connection / Verbindung
   * Eine IMAP4-Verbindung besteht aus Client-Server-Kommandos und Server-Client-Antworten.
-  * Sie besteht zeitlich gesehen direkt vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
+  * Sie besteht vom Ende des Aufbaus bis zum Beginn des Abbaus eines stabilen Datenstroms (link layer).
 * Command / Befehl
   * Ein IMAP4-Befehl eines Clients an den Server.
 * Response / Antwort
@@ -99,10 +98,10 @@ $mbman->logout();
       * AUTHENTICATE
       * LOGIN
   * Authenticated / Authentifiziert
-    * der Nutzer konnte sich gegenüber dem IMAP-Server identifizieren.
+    * der Nutzer konnte sich gegenüber dem IMAP-Server authentifizieren.
     * es wurde also ein erfolgreicher `LOGIN` oder `AUTHENTICATE` Befehl gesendet.
   * Selected / Angewählt
-    * Eine bestimmte Mailbox wurde angewählt.
+    * Ein bestimmtes Postfach wurde angewählt.
     * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `SELECT` herbeigeführt:
       * Auf die Mailbox kann lesend und schreibend zugegriffen werden.
     * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `EXAMINE` herbeigeführt:
