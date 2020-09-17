@@ -4,7 +4,7 @@ MBMan - Eine IMAP Mailboxmanagement API in Perl.
 
 ## Installation
 ```
-$ git clone git@github.com:ingank/MBMan.git
+git clone git@github.com:ingank/MBMan.git
 ```
 
 ## Abhängigkeiten
