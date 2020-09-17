@@ -34,6 +34,42 @@ $mbman->logout();
 
 ---
 
+## Lokales Backup inspizieren
+MBMan kann ein lokales Backup der auf einem IMAP-Server befindlichen Nachrichten anfertigen.
+Die einzelnen Nachrichten werden im sogennanten EML-Format in lokalen Ordnern abgelegt.
+Zur Inspektion dieser Emails und vor allem zur Suche nach bestimmten Nachrichten kann folgende
+Vorgehensweise sinnvoll sein:
+
+* Installation des Thunderbird Email-Clients.
+* Installation des Add-ons 'ImportExportTools NG' von Christopher Leidigh:
+  * Klick auf 'Drei Striche' oben rechts.
+  * Klick auf 'Add-ons'.
+  * Klick auf 'Add-ons'.
+  * Im Suchfeld 'Import' eingeben.
+  * 'ImportExportTools NG' 'Zu Thunderbird hinzufügen'.
+  * Neustart bestätigen.
+* Import von lokalen Backup-Ordnern:
+  * Rechts-Klick auf 'lokale Ordner' links im Ordnerbaum.
+  * Klick auf 'Neuer Ordner...'
+  * Beliebigen Ordnernamen eingeben.
+  * Klick auf 'Ordner erstellen'.
+  * Rechts-Klick auf neuen Ordner.
+  * Gehe zu 'ImportExportTools NG'.
+  * Gehe zu 'Importiere alle Nachrichten eines Verzeichnisses'.
+  * Klick auf 'Auch aus den Unterverzeichnissen'.
+  * Navigiere zum gewünschten Mailbox-Ordner.
+  * Mailbox-Ordner markieren.
+  * Klick auf 'Öffnen'
+  * Nach dem Import kann auf alle Nachrichten wie in Thunderbird üblich zugegriffen werden.
+* Nach der Inspektion:
+  * Der lokale Ordner innerhalb von Thunderbird kann wieder gelöscht werden.
+* Vorteile:
+  * Schnelle Suchen und Filter anwenden.
+  * Stabile Dekodierung von MIME-codierten Nachrichten.
+  * Nochmalige automatische Kopie der Original-Nachrichten beim Importieren. Dadurch wird die Gefahr eines Dtaneverlustes minimiert.
+* Nachteile:
+  * Das Importieren kostet zusätzlich Zeit und Festplattenplatz.
+
 ## RFCs zum IMAP4-Protokoll
 * [RFC1730](https://tools.ietf.org/html/rfc1730) 
   * INTERNET MESSAGE ACCESS PROTOCOL - VERSION 4
