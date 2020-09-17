@@ -15,6 +15,21 @@ cpan install FileHandle
 ```
 ## Anwendung
 ```
+use MBMan;
+my $mbman = MBMan->new();
+
+$mbman->connect(
+    Server => 'imap.server.tld'
+);
+
+$mbman->login(
+    User => 'user@domain.tld',
+    Password => 'pa$$w0rd'
+);
+
+$mbman->new_database();
+$mbman->unshift_message() if mbman->limit_reached();
+$mbman->logout();
 ```
 
 ---
