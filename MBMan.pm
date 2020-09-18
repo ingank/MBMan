@@ -315,16 +315,19 @@ sub message_unshift
     $data->{'05_ReceivedSize'} = length($message);
     $data->{'06_MD5'}          = md5_hex($message);
     $data->{'10_Message'}      = $message;
-
-    if ($expunge) {
-
-        $imap->select($mailbox);
-        $imap->delete_message($uid);
-        $imap->expunge;
-
-    }
-
     $notes->{'40_LastMessage'} = $data;
+
+    # Wenn eine Nachricht nach dem Holen auf dem Server gelöscht werden soll,
+    # wird eine lokale Kopie der Nachricht automatisch erstellt.
+    # Dabei gilt: Nur, wenn die Nachricht auch wirklich gesichert wurde,
+    # wird sie auch auf dem Server gelöscht.
+
+    return $data unless $save or $expunge;
+    return 0     unless $self->message_save();
+    return $data unless $expunge;
+    $imap->select($mailbox);
+    $imap->delete_message($uid);
+    $imap->expunge;
     return $data;
 
 }
