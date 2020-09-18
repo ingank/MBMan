@@ -51,7 +51,8 @@ sub new
         Limit    => 80,
         Folder   => 'MBData',
         IdWidth  => 6,
-        MaxSize  => 0
+        MaxSize  => 0,
+        SaveChk  => 1           # Nach dem Speichern Datei prüfen
 
     };
 
@@ -270,6 +271,7 @@ sub message_unshift
 
         Mailbox => 'INBOX',
         Expunge => 0,
+        Save    => 1          # Nachricht nach dem Herunterladen automatisch speichern
 
     };
 
@@ -300,11 +302,7 @@ sub message_unshift
     my $uid  = ${$uid_list}[0];
     my $size = $imap->size($uid);
 
-    if ($maxsize) {
-
-        return 0 if $size > $maxsize;
-
-    }
+    return 0 if $maxsize and ( $size > $maxsize );
 
     my $message = $imap->message_string($uid);
 
@@ -316,16 +314,19 @@ sub message_unshift
     $data->{'05_ReceivedSize'} = length($message);
     $data->{'06_MD5'}          = md5_hex($message);
     $data->{'10_Message'}      = $message;
-
-    if ($expunge) {
-
-        $imap->select($mailbox);
-        $imap->delete_message($uid);
-        $imap->expunge;
-
-    }
-
     $notes->{'40_LastMessage'} = $data;
+
+    # Wenn eine Nachricht nach dem Holen auf dem Server gelöscht werden soll,
+    # wird eine lokale Kopie der Nachricht automatisch erstellt.
+    # Dabei gilt: Nur, wenn die Nachricht auch wirklich gesichert wurde,
+    # wird sie auch auf dem Server gelöscht.
+
+    return $data unless $save or $expunge;
+    return 0     unless $self->message_save();
+    return $data unless $expunge;
+    $imap->select($mailbox);
+    $imap->delete_message($uid);
+    $imap->expunge;
     return $data;
 
 }
@@ -441,23 +442,32 @@ sub message_save
 
     return 0 unless $uid && $uidval && $md5 && $text;
 
+    my $savechk = $self->{SaveChk};
+
     chdir || die('Kann nicht in das Home-Verzeichnis wechseln');
 
     return 0 unless ( -d $folder );
 
     chdir $folder || die('Kann nicht in die Datenbank wechseln');
-
     mkdir( $user, 0755 ) unless ( -d $user );
     chdir $user || die('Kann nicht in den Benutzerzweig wechseln');
 
     my $filename = $uidval;
     $filename .= " - " . ( sprintf "%0" . $width . "d", $uid );
     $filename .= ".eml";
+
     my $handle = FileHandle->new( $filename, "w" );
     print $handle $text;
     undef $handle;
 
     return 0 unless ( -f $filename );
+    return 1 unless $savechk;
+
+    $handle = FileHandle->new( $filename, "r" );
+    my $text2 = do { local $/; <$handle> };
+    undef $handle;
+
+    return 0 unless $text eq $text2;
     return 1;
 
 }

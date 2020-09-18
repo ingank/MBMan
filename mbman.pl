@@ -84,19 +84,13 @@ sub main {
 
         if ($opt_u) {
 
-            $mbman->message_unshift( Expunge => $opt_e );
+            $mbman->message_unshift( Expunge => $opt_e, Save => $opt_s );
 
         }
 
         if ($opt_d) {
 
             $mbman->database_new;
-
-        }
-
-        if ($opt_s) {
-
-            say $messages{saved} if $mbman->message_save;
 
         }
 
