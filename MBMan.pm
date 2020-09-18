@@ -51,7 +51,8 @@ sub new
         Limit    => 80,
         Folder   => 'MBData',
         IdWidth  => 6,
-        MaxSize  => 0
+        MaxSize  => 0,
+        SaveChk  => 1           # Nach dem Speichern Datei prüfen
 
     };
 
