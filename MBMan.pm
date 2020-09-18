@@ -229,13 +229,12 @@ sub folders
   #
 {
 
-    my $self  = shift;
-    my $imap  = $self->{Imap};
-    my $notes = $self->{Notes};
+    my $self = shift;
+    my $imap = $self->{Imap};
 
     return 0 unless $imap->IsAuthenticated;
 
-    # my $folders  = $imap->folders;
+    my $notes    = $self->{Notes};
     my @fhashes  = $imap->folders_hash;
     my $folders  = ();
     my $specials = {};
