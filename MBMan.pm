@@ -272,6 +272,7 @@ sub message_unshift
 
         Mailbox => 'INBOX',
         Expunge => 0,
+        Save    => 1          # Nachricht nach dem Herunterladen automatisch speichern
 
     };
 
