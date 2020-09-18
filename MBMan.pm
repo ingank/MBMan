@@ -303,11 +303,7 @@ sub message_unshift
     my $uid  = ${$uid_list}[0];
     my $size = $imap->size($uid);
 
-    if ($maxsize) {
-
-        return 0 if $size > $maxsize;
-
-    }
+    return 0 if $maxsize and ( $size > $maxsize );
 
     my $message = $imap->message_string($uid);
 
