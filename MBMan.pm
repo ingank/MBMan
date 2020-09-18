@@ -443,23 +443,32 @@ sub message_save
 
     return 0 unless $uid && $uidval && $md5 && $text;
 
+    my $savechk = $self->{SaveChk};
+
     chdir || die('Kann nicht in das Home-Verzeichnis wechseln');
 
     return 0 unless ( -d $folder );
 
     chdir $folder || die('Kann nicht in die Datenbank wechseln');
-
     mkdir( $user, 0755 ) unless ( -d $user );
     chdir $user || die('Kann nicht in den Benutzerzweig wechseln');
 
     my $filename = $uidval;
     $filename .= " - " . ( sprintf "%0" . $width . "d", $uid );
     $filename .= ".eml";
+
     my $handle = FileHandle->new( $filename, "w" );
     print $handle $text;
     undef $handle;
 
     return 0 unless ( -f $filename );
+    return 1 unless $savechk;
+
+    $handle = FileHandle->new( $filename, "r" );
+    my $text2 = do { local $/; <$handle> };
+    undef $handle;
+
+    return 0 unless $text eq $text2;
     return 1;
 
 }
