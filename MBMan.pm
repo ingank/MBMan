@@ -337,14 +337,11 @@ sub limit_reached
   # Nutzerkontos überschritten wurde
   #
 {
-    my $self  = shift;
-    my $imap  = $self->{Imap};
-    my $notes = $self->{Notes};
 
+    my $self = shift;
+    my $imap = $self->{Imap};
     return 0 unless $imap->IsAuthenticated;
-
     my ( $quota, $usage, $usage100 ) = $self->quota;
-
     return 0 if $usage100 lt $self->{Limit};
     return 1;
 
