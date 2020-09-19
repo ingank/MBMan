@@ -41,6 +41,7 @@ our $opt_u = 0;     # unshift message
 our $opt_d = 0;     # new database
 our $opt_s = 0;     # save message
 our $opt_i = 0;     # print info at max collector level
+our $opt_a = 0;     # autolimit
 
 our $mbman = undef;
 
@@ -50,10 +51,10 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:hveclfqudsi');
+        getopts('S:U:P:hveclfqudsia');
         $opt_h and do { help_print(); return 1 };
 
-        $mbman = MBMan->new( Debug => $opt_v );
+        $mbman = MBMan->new( Debug => $opt_v, Limit => 67 );
 
         if ( $opt_c and $opt_S ) {
 
@@ -97,6 +98,12 @@ sub main {
         if ($opt_i) {
 
             &status_print;
+
+        }
+
+        if ($opt_a) {
+
+            $mbman->mb_limit;
 
         }
 
