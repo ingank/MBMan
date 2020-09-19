@@ -88,7 +88,7 @@ Vorgehensweise sinnvoll sein:
 * [RFC1731](https://tools.ietf.org/html/rfc1731)
   * IMAP4 Authentication Mechanisms
 
-## Nomenklatur und Logik des IMAP4-Protokolls
+## Nomenklatur und Logik des IMAP4rev1-Protokolls
 
 * User / Nutzer
   * Ein menschlicher Benutzer.
@@ -115,30 +115,50 @@ Vorgehensweise sinnvoll sein:
   * Eine IMAP4-Antwort eines Servers an den Client.
 * State *of connection* / Zustand *der Verbindung*
   * Any State / (in) jedem Zustand
-    * konretisiert den Zustand einer bestehenden **Verbindung** zwischen Client und Server. Dies schließt auch alle übergeordneten Zustände ein.
-    * Mögliche IMAP-Befehle laut RFC3501:
+    * konkretisiert den Zustand einer bestehenden **Verbindung** zwischen Client und Server.
+    * Dies schließt auch alle übergeordneten Zustände ( Not Authenticated, Authenticated, Selected ) ein.
+    * Capabilities (Mögliche IMAP-Befehle) laut RFC3501:
       * CAPABILITY
       * NOOP
       * LOGOUT
-  * Not Authenticated / Nicht authentifiziert
+  * Not Authenticated State / Nicht authentifizierter Zustand
     * konkretisiert den Zustand vor/während der Authentifizierung des Users gegenüber dem Server.
-    * wird beispielsweise mit der Server-Antwort `* OK IMAP4rev1 server ready` eingeleitet.
-    * Mögliche IMAP-Befehle laut RFC3501:
-      * CAPABILITY
-      * NOOP
-      * LOGOUT
+    * Dieser Zustand besteht direkt nach dem Server-Greeting (Server-Begrüßung).
+    * Beispiel für eine Begrüßung: * OK IMAP4rev1 server ready`.
+    * Capabilities (Mögliche IMAP-Befehle) laut RFC3501 (zusätzlich zu den Befehlen im *Any State*):
       * STARTTLS
       * AUTHENTICATE
       * LOGIN
-  * Authenticated / Authentifiziert
+  * Authenticated State / Authentifizierter Status
     * der Nutzer konnte sich gegenüber dem IMAP-Server authentifizieren.
     * es wurde also ein erfolgreicher `LOGIN` oder `AUTHENTICATE` Befehl gesendet.
+    * Capabilities (Mögliche IMAP-Befehle) laut RFC3501 (zusätzlich zu den Befehlen im *Any State* und *Not Authenticated State*):
+      * SELECT
+      * EXAMINE
+      * CREATE
+      * DELETE
+      * RENAME
+      * SUBSCRIBE
+      * UNSUBSCRIBE
+      * LIST
+      * LSUB
+      * STATUS
+      * APPEND
   * Selected / Angewählt
     * Ein bestimmtes Postfach wurde angewählt.
     * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `SELECT` herbeigeführt:
       * Auf die Mailbox kann lesend und schreibend zugegriffen werden.
     * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `EXAMINE` herbeigeführt:
       * Auf die Mailbox kann ausschließlich lesend zugegriffen werden.
+    * Capabilities (Mögliche IMAP-Befehle) laut RFC3501 (zusätzlich zu den Befehlen im *Any State*, *Not Authenticated State* und *Authenticated State*):
+      * CHECK
+      * CLOSE
+      * EXPUNGE
+      * SEARCH
+      * FETCH
+      * STORE
+      * COPY
+      * UID
 
 ## IMAP4-Server-Implementationen
 * [Cyrus IMAP](https://www.cyrusimap.org/) || [RFCs Supported by Cyrus IMAP](https://github.com/cyrusimap/cyrus-imapd/blob/master/docsrc/imap/rfc-support.rst)
