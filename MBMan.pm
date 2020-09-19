@@ -350,6 +350,19 @@ sub limit_reached
 
 }
 
+sub mb_limit
+  #
+  # Holt solange die ältesten Nachrichten vom Server,
+  # bis das angegebene Limit unterschritten wurde.
+  # Speichere dabei die Nachrichten lokal und lösche
+  # sie vom Server.
+  #
+{
+
+    return 1;
+
+}
+
 sub notes
   #
   # Gib gesammelte Infos an den Hostprozess
