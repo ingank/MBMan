@@ -1,6 +1,6 @@
 # MBMan
 
-MBMan - Eine IMAP Mailboxmanagement API in Perl.
+Eine IMAP Mailboxmanagement API in Perl.
 
 ## Installation
 ```
