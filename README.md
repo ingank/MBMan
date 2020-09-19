@@ -129,7 +129,7 @@ Vorgehensweise sinnvoll sein:
       * STARTTLS
       * AUTHENTICATE
       * LOGIN
-  * Authenticated State / Authentifizierter Status
+  * Authenticated State / Authentifizierter Zustand
     * der Nutzer konnte sich gegenüber dem IMAP-Server authentifizieren.
     * es wurde also ein erfolgreicher `LOGIN` oder `AUTHENTICATE` Befehl gesendet.
     * Capabilities (Mögliche IMAP-Befehle) laut RFC3501 (zusätzlich zu den Befehlen im *Any State* und *Not Authenticated State*):
@@ -144,7 +144,7 @@ Vorgehensweise sinnvoll sein:
       * LSUB
       * STATUS
       * APPEND
-  * Selected / Angewählt
+  * Selected State / Angewählter Zustand
     * Ein bestimmtes Postfach wurde angewählt.
     * Der *angewählte Zustand* wurde mit dem IMAP4-Befehl `SELECT` herbeigeführt:
       * Auf die Mailbox kann lesend und schreibend zugegriffen werden.
