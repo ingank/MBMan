@@ -7,7 +7,7 @@
 package MBMan;
 use strict;
 
-our $VERSION = '0.0.6';
+our $VERSION = '0.0.7';
 
 use warnings;
 use diagnostics;
