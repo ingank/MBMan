@@ -75,9 +75,52 @@ sub new
         Peek  => $self->{Peek},
         Uid   => $self->{Uid}
 
-    ) || die("Kann kein Objekt der Klasse Mail::IMAPClient erzeugen\n");
+    ) || die("Instanzierung der Klasse Mail::IMAPClient fehlgeschlagen.\n");
 
     return $self;
+
+}
+
+sub vars
+  #
+  # Gibt einen Hash mit internen Variablen zurück.
+  # Die Variablen des IMAP-Client-Objektes werden ausgeblendet.
+  # Zur Maximierung der Kontrolle ist die Variablen-Liste als
+  # White-List umgesetzt. Ein weiterer Vorteil ist die einfache
+  # Umsetzung von verschiedenen Listensets oder die Modularisierung.
+  #
+{
+
+    my $self = shift;
+    my $data = {};
+
+    my %keywords = map { $_, 1 } qw (
+      Debug
+      Ssl
+      Peek
+      Uid
+      Server
+      User
+      Password
+      Limit
+      Folder
+      IdWidth
+      MaxSize
+      SaveChk
+      ServerIDTag
+    );
+
+    for my $keyword ( keys(%keywords) ) {
+
+        if ( exists $self->{$keyword} ) {
+
+            $data->{$keyword} = $self->{$keyword};
+
+        }
+
+    }
+
+    return $data;
 
 }
 
