@@ -186,34 +186,32 @@ sub login
 
     }
 
-    my $imap  = $self->{Imap};
-    my $notes = $self->{Notes};
-    my $user  = $self->{User};
-    my $pass  = $self->{Password};
-    my $debug = $self->{Debug};
-    my $data  = undef;
-
+    my $imap = $self->{Imap};
     return 1 if $imap->IsAuthenticated;
-    return 0 unless $imap->IsConnected;
-    return 0 unless $user;
-    return 0 unless $pass;
-    return 0 unless $imap->has_capability('AUTH=CRAM-MD5');
+
+    die("Keine Verbindung zum IMAP-Server vorhanden.\n")
+      unless $imap->IsConnected;
+
+    die("Der Server unterstützt kein CRAM-MD5.\n")
+      unless $imap->has_capability('AUTH=CRAM-MD5');
+
+    my $user = $self->{User}     // 0;
+    my $pass = $self->{Password} // 0;
+
+    die("Benutzerkennung ist unbekannt.\n")
+      unless $user;
+
+    die("Passwort ist unbekannt.\n")
+      unless $pass;
 
     $imap->User($user);
     $imap->Password($pass);
     $imap->Authmechanism('CRAM-MD5');
     $imap->login;
 
-    return 0 unless $imap->IsAuthenticated;
+    die("Authentifizierung fehlgeschlagen.\n")
+      unless $imap->IsAuthenticated;
 
-    if ($debug) {
-
-        my $capa = $imap->capability;
-        $notes->{'20_UserCapa'} = $capa;
-
-    }
-
-    $notes->{'00_Status'} = 'Authenticated';
     return 1;
 
 }
