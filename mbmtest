@@ -51,21 +51,33 @@ sub main {
     if (@ARGV) {
 
         getopts('S:U:P:hveclfqudsia');
-        $opt_h and do { help_print(); return 1 };
+
+        if ($opt_h) {
+
+            help_print();
+            return 1
+
+        }
 
         $mbman = MBMan->new( Debug => $opt_v );
 
         if ( $opt_c and $opt_S ) {
 
-            $mbman->connect( Server => $opt_S );
+            $mbman->connect(
+
+                Server => $opt_S
+
+            );
 
         }
 
         if ( $opt_l and $opt_U and $opt_P ) {
 
             $mbman->login(
+
                 User     => $opt_U,
-                Password => $opt_P,
+                Password => $opt_P
+
             );
 
         }
@@ -84,7 +96,12 @@ sub main {
 
         if ($opt_u) {
 
-            $mbman->message_unshift( Expunge => $opt_e, Save => $opt_s );
+            $mbman->message_unshift(
+
+                Expunge => $opt_e,
+                Save    => $opt_s
+
+            );
 
         }
 
@@ -132,8 +149,10 @@ sub help_print
 {
 
     pod2usage(
+
         -verbose    => 2,
         -perldocopt => "-T"
+
     );
 
 }
