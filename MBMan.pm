@@ -29,7 +29,7 @@ $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Terse    = 1;
 $Data::Dumper::Indent   = 1;
 
-# Client-/Server-Kommunikation
+# Objekthandling
 
 sub new
   #
@@ -39,20 +39,22 @@ sub new
 
     my $class = shift;
 
+    # Voreinstellungen
+
     my $self = {
 
-        Debug    => 0,
-        Ssl      => 1,
-        Peek     => 1,          # 1 = setze nicht das /SEEN Flag
-        Uid      => 1,          # nutze UID
-        Server   => '',
-        User     => '',
-        Password => '',
-        Limit    => 80,
-        Folder   => 'MBData',
-        IdWidth  => 6,
-        MaxSize  => 0,
-        SaveChk  => 1           # Nach dem Speichern Datei prüfen
+        Debug    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
+        Ssl      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
+        Peek     => 1,           # 1 = setze nicht das /SEEN Flag
+        Uid      => 1,           # nutze UID
+        Server   => '',          # IMAP-Servername (fqdn) oder Server-IP
+        User     => '',          # dem IMAP-Server bekannte Nutzerkennung
+        Password => '',          # zur Nutzerkennung passende Passphrase
+        Limit    => 80,          # Maximale Füllung der Mailbox in Prozent
+        Folder   => 'MBData',    # ~/${Folder}
+        IdWidth  => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
+        MaxSize  => 0,           # Maximale Größe von Nachrichten in Byte; 0 = unbegrenzt
+        SaveChk  => 1            # Nach dem Speichern Datei gegenprüfen
 
     };
 
