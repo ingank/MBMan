@@ -75,13 +75,13 @@ sub new
         Peek  => $self->{Peek},
         Uid   => $self->{Uid}
 
-    ) || die;
-
-    $self->{Notes}->{'00_Status'} = 'New';
+    ) || die("Kann kein Objekt der Klasse Mail::IMAPClient erzeugen\n");
 
     return $self;
 
 }
+
+# Client-/Server-Kommunikation
 
 sub connect
   #
