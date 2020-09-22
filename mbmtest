@@ -90,7 +90,7 @@ sub main {
 
         if ($opt_q) {
 
-            $mbman->quota;
+            print Dumper $mbman->quota;
 
         }
 
