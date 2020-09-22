@@ -83,7 +83,7 @@ sub new
 
 sub vars
   #
-  # Gibt einen Hash mit internen Variablen zurück.
+  # Gibt eine Hashreferenz auf Kopien von internen Variablen zurück.
   # Die Variablen des IMAP-Client-Objektes werden ausgeblendet.
   # Zur Maximierung der Kontrolle ist die Variablen-Liste als
   # White-List umgesetzt. Ein weiterer Vorteil ist die einfache
@@ -124,7 +124,7 @@ sub vars
 
 }
 
-# Client-/Server-Kommunikation
+# IMAP4 Client-/Server-Kommunikation
 
 sub connect
   #
