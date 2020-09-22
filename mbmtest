@@ -53,7 +53,7 @@ sub main {
         getopts('S:U:P:hveclfqudsia');
         $opt_h and do { help_print(); return 1 };
 
-        $mbman = MBMan->new( Debug => $opt_v, Limit => 67 );
+        $mbman = MBMan->new( Debug => $opt_v );
 
         if ( $opt_c and $opt_S ) {
 
@@ -121,8 +121,7 @@ sub main {
 
 sub status_print {
 
-    my $ax = $mbman->notes;
-    print Dumper $ax;
+    print Dumper $mbman->vars;
 
 }
 
