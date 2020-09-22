@@ -148,11 +148,13 @@ sub connect
     my $notes  = $self->{Notes};
     my $server = $self->{Server};
 
-    die("IMAP-Server-Adresse ist unbekannt.\n") unless $server;
+    die("IMAP-Server-Adresse ist unbekannt.\n")
+      unless $server;
 
     $imap->Server($server);
 
-    die("IMAP-Server konnte nicht konnektiert werden.\n") unless $imap->connect;
+    die("IMAP-Server konnte nicht konnektiert werden.\n")
+      unless $imap->connect;
 
     my $server_response;
     my $server_id_tag;
