@@ -1,9 +1,8 @@
 #!/usr/bin/perl
 #
-# mbman.pl
+# mbmtest
 #
-# Kommandoszeilentool zum Testen des Moduls MBMan.
-#
+# Perl-Programm zum Testen von MBMan.pm.
 
 use strict;
 use warnings;
@@ -146,15 +145,15 @@ __END__
 
 =head1 NAME
  
-B<mbman.pl> ( Version 0.0.1 )
+B<mbmtest>
 
 =head1 FUNKTION
 
-Kommandoszeilentool zum Zugriff auf die MBMan API.
+Perl-Programm zum Testen von MBMan.pm.
 
 =head1 ANWENDUNG
  
-accman.pl [-hv][-S Servername[:Port]][-U Username -P Passwort]
+mbmtest [Option+][Befehl+]
 
 =head1 OPTIONEN
 
@@ -170,12 +169,12 @@ Das Programm gibt zusätzliche Informationen aus (verbose).
 
 =item B<-S Server[:Port]>
 
-Hostadresse und Port des IMAP4S-Servers. Standardport = 993.
+Hostadresse und Port eines IMAP4S-Servers. Standardport = 993.
 
 =item B<-U Username>
 
 Der für den IMAP-Login zu verwendende Nutzername
-(bei großen Email-Hostern meist in der Form 'foo@bar.tld').
+(Email-Hoster bedienen sich meißt folgenden Schemas: 'foo@bar.tld').
 
 =item B<-P Passwort>
 
@@ -187,9 +186,9 @@ Das für den IMAP-Login zu verwendende Passwort.
 
 =over
 
-=item B<-i>
+=item B<-c>
 
-Sammle Infos über das IMAP-Postfach und gib sie auf dem Bildschirm aus.
+Das 'c' steht für 'connect'; Verbinde zum IMAP-Server. Der Verbindungsstatus nach diesem Befehl lautet 'not authenticated'.
 
 =back 
 
