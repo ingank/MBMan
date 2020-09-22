@@ -218,39 +218,48 @@ sub login
 
 sub quota
   #
+  # Gibt folgende Werte als Hashreferenz zurück:
+  #
+  # Quota     => Die Quota des IMAP-Benutzers auf dem Server in Byte.
+  # Usage     => Aktuelle Nutzung des Speichers auf dem Server in Byte.
+  # UsageCent => Wieviel Prozent der Quota werden aktuell genutzt?
+  #
 {
-    my $self     = shift;
-    my $imap     = $self->{Imap};
-    my $notes    = $self->{Notes};
-    my $quota    = 0;
-    my $usage    = 0;
-    my $usage100 = 0;
+    my $self = shift;
 
-    if ( $imap->IsAuthenticated ) {
+    my $imap = $self->{Imap};
 
-        my $quotaroot = $imap->getquotaroot();
+    die("Voraussetzung für die Ermittlung der Quota ist der AUTHENTICATED STATE!\n")
+      unless $imap->IsAuthenticated;
 
-        for ( @{$quotaroot} ) {
+    my $quota      = 0;
+    my $usage      = 0;
+    my $usage_cent = 0;
 
-            if ( $_ =~ /\(STORAGE (\d+) (\d+)\)/ ) {
+    my $quotaroot = $imap->getquotaroot();
 
-                $usage = $1 * 1024;
-                $quota = $2 * 1024;
-                last;
+    for ( @{$quotaroot} ) {
 
-            }
+        if ( $_ =~ /\(STORAGE (\d+) (\d+)\)/ ) {
+
+            $usage = $1 * 1024;
+            $quota = $2 * 1024;
+            last;
+
         }
     }
 
-    $usage    = "$usage";
-    $quota    = "$quota";
-    $usage100 = $usage / $quota * 100;
+    $usage      = "$usage";
+    $quota      = "$quota";
+    $usage_cent = $usage / $quota * 100;
 
-    $notes->{'21_UserQuota'}    = $quota;
-    $notes->{'22_UserUsage'}    = $usage;
-    $notes->{'23_UserUsage100'} = $usage100;
+    my $data = {};
 
-    return ( $quota, $usage, $usage100 );
+    $data->{'Quota'}     = $quota;
+    $data->{'Usage'}     = $usage;
+    $data->{'UsageCent'} = $usage_cent;
+
+    return $data;
 
 }
 
