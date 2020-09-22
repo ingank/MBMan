@@ -142,43 +142,28 @@ sub connect
 
     }
 
-    my $imap   = $self->{Imap};
+    my $imap = $self->{Imap};
+    return 1 if $imap->IsConnected;
+
     my $notes  = $self->{Notes};
     my $server = $self->{Server};
-    my $debug  = $self->{Debug};
 
-    return 1 if $imap->IsConnected;
-    return 0 unless $server;
+    die("IMAP-Server-Adresse ist unbekannt.\n") unless $server;
 
     $imap->Server($server);
-    $imap->connect || return 0;
 
-    if ($debug) {
+    die("IMAP-Server konnte nicht konnektiert werden.\n") unless $imap->connect;
 
-        # slurp
-        my $s_resp = $imap->LastIMAPCommand;
-        my $s_id   = $imap->tag_and_run('ID NIL');
-        my $s_capa = $imap->capability;
+    my $server_response;
+    my $server_id_tag;
 
-        # transmutation
-        $s_resp = &_str_chomp($s_resp);
-        $s_id   = &_str_chomp( ${$s_id}[1] );
+    $server_response          = $imap->LastIMAPCommand;
+    $server_response          = &_str_chomp($server_response);
+    $self->{'ServerResponse'} = $server_response;
+    $server_id_tag            = $imap->tag_and_run('ID NIL');
+    $server_id_tag            = &_str_chomp( ${$server_id_tag}[1] );
+    $self->{'ServerIDTag'}    = $server_id_tag;
 
-        # spit out
-        $notes->{'10_ServerResponse'} = $s_resp;
-        $notes->{'11_ServerIDTag'}    = $s_id;
-        $notes->{'12_ServerCapa'}     = $s_capa;
-
-    }
-    else {
-
-        my $s_id = $imap->tag_and_run('ID NIL');
-        $s_id = &_str_chomp( ${$s_id}[1] );
-        $notes->{'11_ServerIDTag'} = $s_id;
-
-    }
-
-    $notes->{'00_Status'} = 'Connected';
     return 1;
 
 }
