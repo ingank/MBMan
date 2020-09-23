@@ -91,6 +91,7 @@ sub main {
         if ($opt_q) {
 
             print Dumper $mbman->quota;
+            print Dumper $mbman->usage;
 
         }
 
