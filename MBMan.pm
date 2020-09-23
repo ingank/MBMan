@@ -218,23 +218,23 @@ sub login
 
 sub quota
   #
-  # Gibt folgende Werte als Hashreferenz zurück:
+  # Gibt folgende Werte als Liste zurück:
   #
-  # Quota     => Die Quota des IMAP-Benutzers auf dem Server in Byte.
-  # Usage     => Aktuelle Nutzung des Speichers auf dem Server in Byte.
-  # UsageCent => Wieviel Prozent der Quota werden aktuell genutzt?
+  #     (x, y)
+  #
+  # x = Die Quota des IMAP-Benutzers auf dem Server in Byte.
+  # y = Aktuelle Nutzung des Speichers auf dem Server in Byte.
   #
 {
-    my $self = shift;
 
+    my $self = shift;
     my $imap = $self->{Imap};
 
     die("Voraussetzung für die Ermittlung der Quota ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
 
-    my $quota      = 0;
-    my $usage      = 0;
-    my $usage_cent = 0;
+    my $quota = 0;
+    my $usage = 0;
 
     my $quotaroot = $imap->getquotaroot();
 
@@ -249,17 +249,26 @@ sub quota
         }
     }
 
-    $usage      = "$usage";
-    $quota      = "$quota";
-    $usage_cent = $usage / $quota * 100;
+    $usage = "$usage";
+    $quota = "$quota";
 
-    my $data = {};
+    return ( $quota, $usage );
 
-    $data->{'Quota'}     = $quota;
-    $data->{'Usage'}     = $usage;
-    $data->{'UsageCent'} = $usage_cent;
+}
 
-    return $data;
+sub usage
+  #
+  # Gibt zurück, wieviel Prozent der Quota aktuell genutzt werden.
+  # Achtung: Der Aufruf dieser Methode zieht die Abarbeitung
+  # der Methode "sub quota()" nach sich. Bei der Nutzung sollte
+  # darauf geachtet werden, beide Methoden zielgerichtet für eine
+  # Operation zu nutzen.
+  #
+{
+
+    my $self = shift;
+    my ( $quota, $usage ) = $self->quota();
+    return ( $usage / $quota * 100 );
 
 }
 
