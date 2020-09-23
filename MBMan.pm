@@ -249,8 +249,8 @@ sub quota
         }
     }
 
-    $usage = "$usage";
-    $quota = "$quota";
+    $usage = "$usage" * 1;
+    $quota = "$quota" * 1;
 
     return ( $quota, $usage );
 
