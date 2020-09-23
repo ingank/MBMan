@@ -290,7 +290,7 @@ sub mailboxes
     my $self = shift;
     my $imap = $self->{Imap};
 
-    die("Voraussetzung für die Ermittlung der Quota ist der AUTHENTICATED STATE!\n")
+    die("Voraussetzung für die Ermittlung von Postfächern ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
 
     my @sigwords = qw (
