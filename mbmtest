@@ -84,7 +84,7 @@ sub main {
 
         if ($opt_f) {
 
-            $mbman->folders;
+            print Dumper $mbman->mailboxes;
 
         }
 
