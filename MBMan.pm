@@ -268,7 +268,7 @@ sub usage
   #
   # Achtung: Der Aufruf dieser Methode zieht die Abarbeitung
   # der Methode "sub quota()" nach sich. Bei der Nutzung sollte
-  # darauf geachtet werden, nur eine der beidenMethoden zielgerichtet
+  # darauf geachtet werden, nur eine der beiden Methoden zielgerichtet
   # für eine Operation zu nutzen.
   #
 {
