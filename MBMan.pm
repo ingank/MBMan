@@ -280,38 +280,55 @@ sub usage
 
 }
 
-sub folders
+sub mailboxes
   #
-  # Holt die aktuelle Liste der Postfächer
+  # Liefert eine Liste aller Postfächer
+  # des aktuellen Nutzers auf dem aktuellen Server
   #
 {
 
     my $self = shift;
     my $imap = $self->{Imap};
 
-    return 0 unless $imap->IsAuthenticated;
+    die("Voraussetzung für die Ermittlung der Quota ist der AUTHENTICATED STATE!\n")
+      unless $imap->IsAuthenticated;
 
-    my $notes    = $self->{Notes};
-    my @fhashes  = $imap->folders_hash;
-    my $folders  = ();
-    my $specials = {};
-    my $data     = {};
+    my @sigwords = qw (
+      All
+      Archive
+      Drafts
+      Flagged
+      Junk
+      Sent
+      Trash
+    );
 
-    foreach my $fhash (@fhashes) {
+    my @folders;
+    my %specials;
+    my @raw;
+    my $data;
 
-        next unless defined $fhash->{name};
+    @raw = $imap->folders_hash;
 
-        my $filter = 'All|Archive|Drafts|Flagged|Junk|Sent|Trash';
-        my @special = grep { /$filter/ } @{ $fhash->{attrs} };
-        if (@special) { $specials->{ $special[0] } = $fhash->{name}; }
-        push @{$folders}, $fhash->{name};
+    for my $item (@raw) {
+
+        next unless defined $item->{name};
+
+        for my $sigword (@sigwords) {
+
+            my @attrs = grep { /$sigword/ } @{ $item->{attrs} };
+
+            if (@attrs) { $specials{$sigword} = $item->{name}; }
+
+        }
+
+        push @folders, $item->{name};
 
     }
 
-    $notes->{'30_Folders'}  = $folders;
-    $notes->{'31_Specials'} = $specials;
-    $data->{Folders}        = $folders;
-    $data->{Specials}       = $specials;
+    $data->{Folders}  = [@folders];
+    $data->{Specials} = {%specials};
+
     return $data;
 
 }
