@@ -10,7 +10,7 @@ git clone git@github.com:ingank/MBMan.git
 ## Abhängigkeiten
 ```
 cpan install Mail::IMAPClient
-cpan Digest::MD5::File
+cpan install Digest::MD5::File
 cpan install FileHandle
 ```
 ## Anwendung
