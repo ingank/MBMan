@@ -343,8 +343,9 @@ sub message
     my $args = {
 
         Mailbox => 'INBOX',
-        Expunge => 0,
-        Save    => 1          # Nachricht nach dem Herunterladen automatisch speichern
+        Uid     => 'OLDEST',    # 'OLDEST' = Älteste, 'NEWEST' = Neueste, ansonsten die UID
+        Expunge => 0,           # Nachricht nach dem Herunterladen auf dem Server löschen?
+        Save    => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
 
     };
 
@@ -356,38 +357,68 @@ sub message
 
     }
 
-    my $data    = undef;
     my $mailbox = $args->{Mailbox};
+    my $uid     = $args->{Uid};
     my $expunge = $args->{Expunge};
     my $save    = $args->{Save};
     my $imap    = $self->{Imap};
-    my $notes   = $self->{Notes};
     my $maxsize = $self->{MaxSize};
 
-    return 0 unless $imap->IsAuthenticated;
-    return 0 unless $imap->exists($mailbox);
+    die("Voraussetzung für den Zugriff auf Server-Nachrichten ist der AUTHENTICATED STATE!\n")
+      unless $imap->IsAuthenticated;
 
-    $imap->examine($mailbox) || return 0;
-    my $uid_list = $imap->messages || return 0;
+    die("Unbekannte Mailbox $mailbox.\n")
+      unless $imap->exists($mailbox);
 
-    return 0 unless scalar @{$uid_list};
+    die("Mailbox $mailbox kann nicht angewählt werden.\n")
+      unless $imap->examine($mailbox);
 
-    my $uid  = ${$uid_list}[0];
-    my $size = $imap->size($uid);
+    my $uid_list = $imap->messages;
 
-    return 0 if $maxsize and ( $size > $maxsize );
+    unless ( scalar @{$uid_list} ) {
 
-    my $message = $imap->message_string($uid);
+        warn;
+        return 0;
 
-    $data->{'00_Uid'}          = $uid;
-    $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
-    $data->{'02_InternalDate'} = $imap->internaldate($uid);
-    $data->{'03_HeaderDate'}   = $imap->date($uid);
-    $data->{'04_ServerSize'}   = $size;
-    $data->{'05_ReceivedSize'} = length($message);
-    $data->{'06_MD5'}          = md5_hex($message);
-    $data->{'10_Message'}      = $message;
-    $notes->{'40_LastMessage'} = $data;
+    }
+
+    if ( $uid eq 'OLDEST' ) {
+
+        $uid = ${$uid_list}[0];
+
+    }
+    if ( $uid eq 'NEWEST' ) {
+
+        $uid = ${$uid_list}[-1];
+
+    }
+
+    die("Nachricht mit der UID $uid ist nicht auf dem Server zu finden.\n")
+      unless scalar grep { /$uid/ } @{$uid_list};
+
+    my $message      = $imap->message_string($uid);
+    my $receivedsize = length($message);
+    my $md5checksum  = md5_hex($message);
+    my $serversize   = $imap->size($uid);
+    my $uidvalidity  = $imap->uidvalidity($mailbox);
+    my $internaldate = $imap->internaldate($uid);
+    my $headerdate   = $imap->date($uid);
+    my $info         = undef;
+    my $data         = undef;
+
+    $info->{UID}           = $uid;
+    $info->{UIDVALIDITY}   = $uidvalidity;
+    $info->{DATE_INTERNAL} = $internaldate;
+    $info->{DATE_HEADER}   = $headerdate;
+    $info->{SIZE_SERVER}   = $serversize;
+    $info->{SIZE_RECEIVED} = $receivedsize;
+    $info->{MD5CHECKSUM}   = $md5checksum;
+    $info->{MAILBOX}       = $mailbox;
+    $data->{INFO}          = $info;
+    $data->{MESSAGE}       = $message;
+    $self->{LastMessage}   = $data;
+
+    return $data;
 
     # Wenn eine Nachricht nach dem Holen auf dem Server gelöscht werden soll,
     # wird eine lokale Kopie der Nachricht automatisch erstellt.
