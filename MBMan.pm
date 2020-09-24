@@ -333,6 +333,77 @@ sub mailboxes
 
 }
 
+sub message
+  #
+  # Holt die älteste Nachricht eines Postfaches vom Server
+  #
+{
+
+    my $self = shift;
+    my $args = {
+
+        Mailbox => 'INBOX',
+        Expunge => 0,
+        Save    => 1          # Nachricht nach dem Herunterladen automatisch speichern
+
+    };
+
+    while (@_) {
+
+        my $k = ucfirst lc shift;
+        my $v = shift;
+        $args->{$k} = $v if defined $v;
+
+    }
+
+    my $data    = undef;
+    my $mailbox = $args->{Mailbox};
+    my $expunge = $args->{Expunge};
+    my $save    = $args->{Save};
+    my $imap    = $self->{Imap};
+    my $notes   = $self->{Notes};
+    my $maxsize = $self->{MaxSize};
+
+    return 0 unless $imap->IsAuthenticated;
+    return 0 unless $imap->exists($mailbox);
+
+    $imap->examine($mailbox) || return 0;
+    my $uid_list = $imap->messages || return 0;
+
+    return 0 unless scalar @{$uid_list};
+
+    my $uid  = ${$uid_list}[0];
+    my $size = $imap->size($uid);
+
+    return 0 if $maxsize and ( $size > $maxsize );
+
+    my $message = $imap->message_string($uid);
+
+    $data->{'00_Uid'}          = $uid;
+    $data->{'01_UidValidity'}  = $imap->uidvalidity($mailbox);
+    $data->{'02_InternalDate'} = $imap->internaldate($uid);
+    $data->{'03_HeaderDate'}   = $imap->date($uid);
+    $data->{'04_ServerSize'}   = $size;
+    $data->{'05_ReceivedSize'} = length($message);
+    $data->{'06_MD5'}          = md5_hex($message);
+    $data->{'10_Message'}      = $message;
+    $notes->{'40_LastMessage'} = $data;
+
+    # Wenn eine Nachricht nach dem Holen auf dem Server gelöscht werden soll,
+    # wird eine lokale Kopie der Nachricht automatisch erstellt.
+    # Dabei gilt: Nur, wenn die Nachricht auch wirklich gesichert wurde,
+    # wird sie auch auf dem Server gelöscht.
+
+    return $data unless $save or $expunge;
+    return 0     unless $self->message_save();
+    return $data unless $expunge;
+    $imap->select($mailbox);
+    $imap->delete_message($uid);
+    $imap->expunge;
+    return $data;
+
+}
+
 sub message_unshift
   #
   # Holt die älteste Nachricht eines Postfaches vom Server

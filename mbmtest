@@ -97,7 +97,7 @@ sub main {
 
         if ($opt_u) {
 
-            $mbman->message_unshift(
+            $mbman->message(
 
                 Expunge => $opt_e,
                 Save    => $opt_s
