@@ -384,12 +384,14 @@ sub message
     die("Mailbox $mailbox kann nicht angewählt werden.\n")
       unless $imap->examine($mailbox);
 
-    my $uid_list = $imap->messages;
+    $uid_list = $imap->messages;
 
     unless ( scalar @{$uid_list} ) {
 
-        warn;
-        return 0;
+        warn("Nachricht konnte nicht geladen werden. Mailbox: $mailbox");
+        $info->{WARNING} = "NO_MESSAGE";
+        $data->{INFO}    = $info;
+        return $data;
 
     }
 
