@@ -358,12 +358,22 @@ sub message
 
     }
 
-    my $mailbox = $args->{Mailbox};
-    my $uid     = $args->{Uid};
-    my $expunge = $args->{Expunge};
-    my $save    = $args->{Save};
-    my $imap    = $self->{Imap};
-    my $maxsize = $self->{MaxSize};
+    my $mailbox      = $args->{Mailbox};
+    my $uid          = $args->{Uid};
+    my $expunge      = $args->{Expunge};
+    my $save         = $args->{Save};
+    my $imap         = $self->{Imap};
+    my $maxsize      = $self->{MaxSize};
+    my $message      = undef;
+    my $receivedsize = undef;
+    my $md5checksum  = undef;
+    my $serversize   = undef;
+    my $uid_list     = undef;
+    my $uidvalidity  = undef;
+    my $internaldate = undef;
+    my $headerdate   = undef;
+    my $info         = undef;
+    my $data         = undef;
 
     die("Voraussetzung für den Zugriff auf Server-Nachrichten ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
