@@ -426,21 +426,25 @@ sub message
     $info->{MAILBOX}       = $mailbox;
     $data->{INFO}          = $info;
     $data->{MESSAGE}       = $message;
-    $self->{LastMessage}   = $data;
+    $self->{LAST_MESSAGE}  = $data;
 
-    return $data;
+    if ($save) {
 
-    # Wenn eine Nachricht nach dem Holen auf dem Server gelöscht werden soll,
-    # wird eine lokale Kopie der Nachricht automatisch erstellt.
-    # Dabei gilt: Nur, wenn die Nachricht auch wirklich gesichert wurde,
-    # wird sie auch auf dem Server gelöscht.
+        die("Nachricht konnte nicht gespeichert werden.")
+          unless $self->message_save();
 
-    return $data unless $save or $expunge;
-    return 0     unless $self->message_save();
-    return $data unless $expunge;
-    $imap->select($mailbox);
-    $imap->delete_message($uid);
-    $imap->expunge;
+    }
+
+    if ($expunge) {
+
+        $imap->select($mailbox);
+        $imap->delete_message($uid);
+
+        die("Kann Nachricht auf dem Server nicht löschen\n")
+          unless $imap->expunge;
+
+    }
+
     return $data;
 
 }
