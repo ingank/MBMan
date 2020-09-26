@@ -409,16 +409,13 @@ sub message
     die("Nachricht mit der UID $uid ist nicht auf dem Server zu finden.\n")
       unless scalar grep { /$uid/ } @{$uid_list};
 
-    my $message      = $imap->message_string($uid);
-    my $receivedsize = length($message);
-    my $md5checksum  = md5_hex($message);
-    my $serversize   = $imap->size($uid);
-    my $uidvalidity  = $imap->uidvalidity($mailbox);
-    my $internaldate = $imap->internaldate($uid);
-    my $headerdate   = $imap->date($uid);
-    my $info         = undef;
-    my $data         = undef;
-
+    $message               = $imap->message_string($uid);
+    $receivedsize          = length($message);
+    $md5checksum           = md5_hex($message);
+    $serversize            = $imap->size($uid);
+    $uidvalidity           = $imap->uidvalidity($mailbox);
+    $internaldate          = $imap->internaldate($uid);
+    $headerdate            = $imap->date($uid);
     $info->{UID}           = $uid;
     $info->{UIDVALIDITY}   = $uidvalidity;
     $info->{DATE_INTERNAL} = $internaldate;
