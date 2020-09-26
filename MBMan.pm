@@ -335,11 +335,12 @@ sub mailboxes
 
 sub message
   #
-  # Holt die älteste Nachricht eines Postfaches vom Server
+  # Holt eine Nachricht eines Postfaches vom Server
   #
 {
 
     my $self = shift;
+
     my $args = {
 
         Mailbox => 'INBOX',
