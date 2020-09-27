@@ -432,7 +432,7 @@ sub message
     if ($save) {
 
         die("Nachricht konnte nicht gespeichert werden.")
-          unless $self->message_save();
+          unless $self->save($data);
 
     }
 
