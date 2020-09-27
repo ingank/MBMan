@@ -388,8 +388,8 @@ sub message
 
     unless ( scalar @{$uid_list} ) {
 
-        warn("Nachricht konnte nicht geladen werden. Mailbox: $mailbox");
-        $info->{WARNING} = "NO_MESSAGE";
+        warn("Mailbox $mailbox ist leer (empty).");
+        $info->{WARNING} = "MAILBOX_EMPTY";
         $data->{INFO}    = $info;
         return $data;
 
