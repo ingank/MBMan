@@ -551,22 +551,6 @@ sub limit
 
 }
 
-sub limit_reached
-  #
-  # Gibt WAHR zurück, wenn das voreingestellte Limit eines
-  # Nutzerkontos überschritten wurde
-  #
-{
-
-    my $self = shift;
-    my $imap = $self->{Imap};
-    return 0 unless $imap->IsAuthenticated;
-    my ( $quota, $usage, $usage100 ) = $self->quota;
-    return 0 if $usage100 lt $self->{Limit};
-    return 1;
-
-}
-
 sub mb_limit
   #
   # Holt solange die ältesten Nachrichten vom Server,
