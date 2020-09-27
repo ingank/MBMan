@@ -97,12 +97,16 @@ sub main {
 
         if ($opt_u) {
 
-            $mbman->message(
+            my $data = $mbman->message(
 
                 Expunge => $opt_e,
-                Save    => $opt_s
+                Save    => $opt_s,
+                Mailbox => 'INBOX',
+                Uid     => 'OLDEST'
 
             );
+
+            print Dumper $data->{INFO};
 
         }
 
