@@ -363,7 +363,7 @@ sub message
     my $expunge      = $args->{Expunge};
     my $save         = $args->{Save};
     my $imap         = $self->{Imap};
-    my $maxsize      = $self->{MaxSize};
+    my $user         = $self->{User};
     my $message      = undef;
     my $receivedsize = undef;
     my $md5checksum  = undef;
@@ -416,6 +416,7 @@ sub message
     $uidvalidity           = $imap->uidvalidity($mailbox);
     $internaldate          = $imap->internaldate($uid);
     $headerdate            = $imap->date($uid);
+    $info->{USER}          = $user;
     $info->{UID}           = $uid;
     $info->{UIDVALIDITY}   = $uidvalidity;
     $info->{DATE_INTERNAL} = $internaldate;
