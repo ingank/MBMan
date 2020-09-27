@@ -512,12 +512,21 @@ sub save
     $filehandle = FileHandle->new( $filename, "w" );
     print $filehandle $message;
     undef $filehandle;
-    return 0 unless ( -f $filename );
-    return 1 unless $savechk;
-    $filehandle = FileHandle->new( $filename, "r" );
-    $filedata = do { local $/; <$filehandle> };
-    undef $filehandle;
-    return 0 unless $message eq $filedata;
+
+    die("Datei $filename konnte nicht geschrieben werden.\n")
+      unless ( -f $filename );
+
+    if ($savechk) {
+
+        $filehandle = FileHandle->new( $filename, "r" );
+        $filedata = do { local $/; <$filehandle> };
+        undef $filehandle;
+
+        die("Gespeicherte Nachricht $filename konnte nicht verifiziert werden.\n")
+          unless $message eq $filedata;
+
+    }
+
     return 1;
 
 }
