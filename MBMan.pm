@@ -426,7 +426,7 @@ sub message
     $info->{MAILBOX}       = $mailbox;
     $data->{INFO}          = $info;
     $data->{MESSAGE}       = $message;
-    $self->{LAST_MESSAGE}  = $data;
+    $self->{MESSAGE}       = $data;
 
     if ($save) {
 
