@@ -694,3 +694,14 @@ sub _array_filter
     return $out;
 
 }
+
+sub DESTROY {
+
+    my $self = shift;
+    my $imap = $self->{Imap};
+
+    return 1 unless $imap->IsConnected;
+    $imap->logout;
+    return 1;
+
+}
