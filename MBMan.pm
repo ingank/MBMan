@@ -531,6 +531,26 @@ sub save
 
 }
 
+sub limit
+  #
+  # Gibt WAHR zurück, wenn das voreingestellte Limit eines
+  # Nutzerkontos überschritten wurde
+  #
+{
+
+    my $self       = shift;
+    my $imap       = $self->{Imap};
+    my $limit      = $self->{Limit};
+    my $quota      = undef;
+    my $usage      = undef;
+    my $usage_cent = undef;
+
+    ( $quota, $usage, $usage_cent ) = $self->usage();
+    return 0 if $usage_cent lt $limit;
+    return 1;
+
+}
+
 sub limit_reached
   #
   # Gibt WAHR zurück, wenn das voreingestellte Limit eines
