@@ -529,6 +529,57 @@ sub limit
 
 }
 
+sub limitlist
+  #
+  # Gibt eine Liste mit UID's zurück,
+  # die nach der Löschung der zugehörigen Nachrichten auf dem Server
+  # den genutzten Speicher genau unterhalb der limitierten Größe des
+  # IMAP-Accounts einmessen würde.
+  #
+{
+
+    my $self = shift;
+
+    my $args = {
+
+        Mailbox => 'INBOX',
+        Trend   => 'OLDEST',        # 'OLDEST' = Älteste, 'NEWEST' = Neueste Nachrichten
+        Limit   => $self->{Limit}
+
+    };
+
+    while (@_) {
+
+        my $k = ucfirst lc shift;
+        my $v = shift;
+        $args->{$k} = $v if defined $v;
+
+    }
+
+    my $mailbox = $args->{Mailbox};
+    my $limit   = $args->{Limit};
+    my $imap    = $self->{Imap};
+
+    $imap->examine($mailbox);
+
+    my $fetch    = $imap->fetch_hash("RFC822.SIZE");
+    my $uid_list = $imap->messages();
+    my ( $quota, $usage ) = $self->quota();
+    my $limit_border = $quota / 100 * $limit;
+    my @data;
+
+    for my $uid ( @{$uid_list} ) {
+
+        last if $usage < $limit_border;
+        $usage -= $fetch->{$uid}->{'RFC822.SIZE'};
+        push @data, $uid;
+
+    }
+
+    return \@data;
+
+}
+
 sub autolimit
   #
   # Löscht solange Nachrichten vom Server,
