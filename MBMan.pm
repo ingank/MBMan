@@ -104,7 +104,7 @@ sub vars
       DBASE
       UIDWIDTH
       FILECHK
-      ServerIDTag
+      SERVER_ID_TAG
     );
 
     for my $keyword ( keys(%keywords) ) {
@@ -156,12 +156,12 @@ sub connect
     my $server_response;
     my $server_id_tag;
 
-    $server_response          = $imap->LastIMAPCommand;
-    $server_response          = &_str_chomp($server_response);
-    $self->{'ServerResponse'} = $server_response;
-    $server_id_tag            = $imap->tag_and_run('ID NIL');
-    $server_id_tag            = &_str_chomp( ${$server_id_tag}[1] );
-    $self->{'ServerIDTag'}    = $server_id_tag;
+    $server_response         = $imap->LastIMAPCommand;
+    $server_response         = &_str_chomp($server_response);
+    $self->{SERVER_RESPONSE} = $server_response;
+    $server_id_tag           = $imap->tag_and_run('ID NIL');
+    $server_id_tag           = &_str_chomp( ${$server_id_tag}[1] );
+    $self->{SERVER_ID_TAG}   = $server_id_tag;
 
     return 1;
 
