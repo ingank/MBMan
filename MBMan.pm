@@ -41,14 +41,12 @@ sub new
 
     # Voreinstellungen
 
-    #
-
     my $self = {
 
         DEBUG    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
         SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
         PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
-        Uid      => 1,           # nutze UID
+        USEUID   => 1,           # nutze UID
         Server   => '',          # IMAP-Servername (fqdn) oder Server-IP
         User     => '',          # dem IMAP-Server bekannte Nutzerkennung
         Password => '',          # zur Nutzerkennung passende Passphrase
@@ -74,7 +72,7 @@ sub new
         Debug => $self->{DEBUG},
         Ssl   => $self->{SSL},
         Peek  => $self->{PEEK},
-        Uid   => $self->{Uid}
+        Uid   => $self->{USEUID}
 
     ) || die("Instanzierung der Klasse Mail::IMAPClient fehlgeschlagen.\n");
 
@@ -99,7 +97,7 @@ sub vars
       DEBUG
       SSL
       PEEK
-      Uid
+      USEUID
       Server
       User
       Limit
