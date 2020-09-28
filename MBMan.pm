@@ -50,7 +50,7 @@ sub new
         SERVER  => '',          # IMAP-Servername (fqdn) oder Server-IP
         USER    => '',          # dem IMAP-Server bekannte Nutzerkennung
         PASS    => '',          # zur Nutzerkennung passende Passphrase
-        Limit   => 80,          # Maximale Füllung der Mailbox in Prozent
+        LIMIT   => 80,          # Maximale Füllung der Mailbox in Prozent
         Folder  => 'MBData',    # ~/${Folder}
         IdWidth => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
         SaveChk => 1            # Nach dem Speichern Datei gegenprüfen
@@ -100,7 +100,7 @@ sub vars
       USEUID
       SERVER
       USER
-      Limit
+      LIMIT
       Folder
       IdWidth
       MaxSize
@@ -531,7 +531,7 @@ sub limit
 
     my $self       = shift;
     my $imap       = $self->{Imap};
-    my $limit      = $self->{Limit};
+    my $limit      = $self->{LIMIT};
     my $quota      = undef;
     my $usage      = undef;
     my $usage_cent = undef;
@@ -557,7 +557,7 @@ sub limitlist
 
         Mailbox => 'INBOX',
         Trend   => 'OLDEST',        # 'OLDEST' = Älteste, 'NEWEST' = Neueste Nachrichten
-        Limit   => $self->{Limit}
+        Limit   => $self->{LIMIT}
 
     };
 
