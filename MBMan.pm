@@ -101,7 +101,6 @@ sub vars
       Uid
       Server
       User
-      Password
       Limit
       Folder
       IdWidth
