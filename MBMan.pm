@@ -67,7 +67,7 @@ sub new
 
     bless $self, ref($class) || $class;
 
-    $self->{Imap} = Mail::IMAPClient->new(
+    $self->{IMAP} = Mail::IMAPClient->new(
 
         Debug => $self->{DEBUG},
         Ssl   => $self->{SSL},
@@ -139,7 +139,7 @@ sub connect
 
     }
 
-    my $imap = $self->{Imap};
+    my $imap = $self->{IMAP};
     return 1 if $imap->IsConnected;
 
     my $notes  = $self->{Notes};
@@ -183,7 +183,7 @@ sub login
 
     }
 
-    my $imap = $self->{Imap};
+    my $imap = $self->{IMAP};
     return 1 if $imap->IsAuthenticated;
 
     die("Keine Verbindung zum IMAP-Server vorhanden.\n")
@@ -225,7 +225,7 @@ sub quota
 {
 
     my $self = shift;
-    my $imap = $self->{Imap};
+    my $imap = $self->{IMAP};
 
     die("Voraussetzung für die Ermittlung der Quota ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
@@ -261,7 +261,7 @@ sub mailboxes
 {
 
     my $self = shift;
-    my $imap = $self->{Imap};
+    my $imap = $self->{IMAP};
 
     die("Voraussetzung für die Ermittlung von Postfächern ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
@@ -342,7 +342,7 @@ sub message
     my $uid          = $args->{Uid};
     my $expunge      = $args->{Expunge};
     my $save         = $args->{Save};
-    my $imap         = $self->{Imap};
+    my $imap         = $self->{IMAP};
     my $user         = $self->{USER};
     my $message      = undef;
     my $receivedsize = undef;
@@ -529,7 +529,7 @@ sub limit
 {
 
     my $self       = shift;
-    my $imap       = $self->{Imap};
+    my $imap       = $self->{IMAP};
     my $limit      = $self->{LIMIT};
     my $quota      = undef;
     my $usage      = undef;
@@ -570,7 +570,7 @@ sub limitlist
 
     my $mailbox = $args->{Mailbox};
     my $limit   = $args->{Limit};
-    my $imap    = $self->{Imap};
+    my $imap    = $self->{IMAP};
 
     $imap->examine($mailbox);
 
@@ -610,7 +610,7 @@ sub logout
 {
 
     my $self  = shift;
-    my $imap  = $self->{Imap};
+    my $imap  = $self->{IMAP};
     my $notes = $self->{Notes};
 
     return 1 unless $imap->IsConnected;
