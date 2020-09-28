@@ -41,9 +41,11 @@ sub new
 
     # Voreinstellungen
 
+    #
+
     my $self = {
 
-        Debug    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
+        DEBUG    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
         Ssl      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
         Peek     => 1,           # 1 = setze nicht das /SEEN Flag
         Uid      => 1,           # nutze UID
@@ -67,9 +69,11 @@ sub new
 
     bless $self, ref($class) || $class;
 
+    my $debug = $self->{DEBUG};
+
     $self->{Imap} = Mail::IMAPClient->new(
 
-        Debug => $self->{Debug},
+        Debug => $debug,
         Ssl   => $self->{Ssl},
         Peek  => $self->{Peek},
         Uid   => $self->{Uid}
@@ -94,7 +98,7 @@ sub vars
     my $data = {};
 
     my %keywords = map { $_, 1 } qw (
-      Debug
+      DEBUG
       Ssl
       Peek
       Uid
