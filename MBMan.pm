@@ -406,14 +406,18 @@ sub message
     $info->{SIZE_RECEIVED} = $receivedsize;
     $info->{MD5CHECKSUM}   = $md5checksum;
     $info->{MAILBOX}       = $mailbox;
+    $info->{SAVED}         = 0;
+    $info->{EXPUNGED}      = 0;
+    $info->{CHECKED}       = 0;
     $data->{INFO}          = $info;
     $data->{MESSAGE}       = $message;
-    $self->{MESSAGE}       = $data;
 
     if ($save) {
 
         die("Nachricht konnte nicht gespeichert werden.")
           unless $self->save($data);
+
+        $data->{SAVED} = 1;
 
     }
 
@@ -425,8 +429,11 @@ sub message
         die("Kann Nachricht auf dem Server nicht löschen\n")
           unless $imap->expunge;
 
+        $data->{INFO}->{EXPUNGED} = 1;
+
     }
 
+    $self->{MESSAGE} = $data;
     return $data;
 
 }
@@ -506,8 +513,11 @@ sub save
         die("Gespeicherte Nachricht $filename konnte nicht verifiziert werden.\n")
           unless $message eq $filedata;
 
+        $info->{CHECKED} = 1;
+
     }
 
+    $info->{SAVED} = 1;
     return 1;
 
 }
