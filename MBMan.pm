@@ -43,17 +43,17 @@ sub new
 
     my $self = {
 
-        DEBUG    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
-        SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
-        PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
-        USEUID   => 1,           # nutze UID
-        SERVER   => '',          # IMAP-Servername (fqdn) oder Server-IP
-        USER     => '',          # dem IMAP-Server bekannte Nutzerkennung
-        Password => '',          # zur Nutzerkennung passende Passphrase
-        Limit    => 80,          # Maximale Füllung der Mailbox in Prozent
-        Folder   => 'MBData',    # ~/${Folder}
-        IdWidth  => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
-        SaveChk  => 1            # Nach dem Speichern Datei gegenprüfen
+        DEBUG   => 0,           # Verwende Mail::IMAPClient im Debug-Modus
+        SSL     => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
+        PEEK    => 1,           # 1 = setze nicht das /SEEN Flag
+        USEUID  => 1,           # nutze UID
+        SERVER  => '',          # IMAP-Servername (fqdn) oder Server-IP
+        USER    => '',          # dem IMAP-Server bekannte Nutzerkennung
+        PASS    => '',          # zur Nutzerkennung passende Passphrase
+        Limit   => 80,          # Maximale Füllung der Mailbox in Prozent
+        Folder  => 'MBData',    # ~/${Folder}
+        IdWidth => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
+        SaveChk => 1            # Nach dem Speichern Datei gegenprüfen
 
     };
 
@@ -193,8 +193,8 @@ sub login
     die("Der Server unterstützt kein CRAM-MD5.\n")
       unless $imap->has_capability('AUTH=CRAM-MD5');
 
-    my $user = $self->{USER}     // 0;
-    my $pass = $self->{Password} // 0;
+    my $user = $self->{USER} // 0;
+    my $pass = $self->{PASS} // 0;
 
     die("Benutzerkennung ist unbekannt.\n")
       unless $user;
