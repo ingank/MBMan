@@ -142,7 +142,6 @@ sub connect
     my $imap = $self->{IMAP};
     return 1 if $imap->IsConnected;
 
-    my $notes  = $self->{Notes};
     my $server = $self->{SERVER};
 
     die("IMAP-Server-Adresse ist unbekannt.\n")
