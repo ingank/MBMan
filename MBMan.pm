@@ -302,8 +302,8 @@ sub mailboxes
 
     }
 
-    $data->{Folders}  = [@folders];
-    $data->{Specials} = {%specials};
+    $data->{FOLDERS}  = [@folders];
+    $data->{SPECIALS} = {%specials};
 
     return $data;
 
