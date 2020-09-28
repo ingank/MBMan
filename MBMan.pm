@@ -47,7 +47,7 @@ sub new
 
         DEBUG    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
         SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
-        Peek     => 1,           # 1 = setze nicht das /SEEN Flag
+        PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
         Uid      => 1,           # nutze UID
         Server   => '',          # IMAP-Servername (fqdn) oder Server-IP
         User     => '',          # dem IMAP-Server bekannte Nutzerkennung
@@ -69,14 +69,11 @@ sub new
 
     bless $self, ref($class) || $class;
 
-    my $debug = $self->{DEBUG};
-    my $ssl   = $self->{SSL};
-
     $self->{Imap} = Mail::IMAPClient->new(
 
-        Debug => $debug,
-        Ssl   => $ssl,
-        Peek  => $self->{Peek},
+        Debug => $self->{DEBUG},
+        Ssl   => $self->{SSL},
+        Peek  => $self->{PEEK},
         Uid   => $self->{Uid}
 
     ) || die("Instanzierung der Klasse Mail::IMAPClient fehlgeschlagen.\n");
@@ -101,7 +98,7 @@ sub vars
     my %keywords = map { $_, 1 } qw (
       DEBUG
       SSL
-      Peek
+      PEEK
       Uid
       Server
       User
