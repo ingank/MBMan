@@ -7,6 +7,7 @@
 use strict;
 use warnings;
 use diagnostics;
+use sigtrap qw/handler signal_handler normal-signals/;
 
 use lib '.';
 use MBMan;
@@ -138,6 +139,19 @@ sub main {
     }
 
     return 0;
+
+}
+
+sub signal_handler {
+
+    die "Benutzerdefinierte Unterbrechung! Signal: $!\n";
+
+}
+
+END {
+
+    $mbman->logout();
+    warn "Die Verbindung zum Server wurde kontrolliert beendet!\n";
 
 }
 
