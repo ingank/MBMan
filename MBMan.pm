@@ -43,17 +43,17 @@ sub new
 
     my $self = {
 
-        DEBUG   => 0,           # Verwende Mail::IMAPClient im Debug-Modus
-        SSL     => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
-        PEEK    => 1,           # 1 = setze nicht das /SEEN Flag
-        USEUID  => 1,           # nutze UID
-        SERVER  => '',          # IMAP-Servername (fqdn) oder Server-IP
-        USER    => '',          # dem IMAP-Server bekannte Nutzerkennung
-        PASS    => '',          # zur Nutzerkennung passende Passphrase
-        LIMIT   => 80,          # Maximale Füllung der Mailbox in Prozent
-        DBASE   => 'MBData',    # ~/${DBASE}
-        IdWidth => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
-        SaveChk => 1            # Nach dem Speichern Datei gegenprüfen
+        DEBUG    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
+        SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
+        PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
+        USEUID   => 1,           # nutze UID
+        SERVER   => '',          # IMAP-Servername (fqdn) oder Server-IP
+        USER     => '',          # dem IMAP-Server bekannte Nutzerkennung
+        PASS     => '',          # zur Nutzerkennung passende Passphrase
+        LIMIT    => 80,          # Maximale Füllung der Mailbox in Prozent
+        DBASE    => 'MBData',    # ~/${DBASE}
+        UIDWIDTH => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
+        SaveChk  => 1            # Nach dem Speichern Datei gegenprüfen
 
     };
 
@@ -102,7 +102,7 @@ sub vars
       USER
       LIMIT
       DBASE
-      IdWidth
+      UIDWIDTH
       MaxSize
       SaveChk
       ServerIDTag
@@ -453,7 +453,7 @@ sub save
     my $mailbox     = $info->{MAILBOX} // 0;
     my $uid         = $info->{UID} // 0;
     my $uidvalidity = $info->{UIDVALIDITY} // 0;
-    my $uidwidth    = $self->{IdWidth} // 0;
+    my $uidwidth    = $self->{UIDWIDTH} // 0;
     my $folder      = $self->{DBASE} // 0;
     my $savechk     = $self->{SaveChk};
     my $filename    = undef;
