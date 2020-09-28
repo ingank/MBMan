@@ -51,7 +51,7 @@ sub new
         USER    => '',          # dem IMAP-Server bekannte Nutzerkennung
         PASS    => '',          # zur Nutzerkennung passende Passphrase
         LIMIT   => 80,          # Maximale Füllung der Mailbox in Prozent
-        Folder  => 'MBData',    # ~/${Folder}
+        DBASE   => 'MBData',    # ~/${DBASE}
         IdWidth => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
         SaveChk => 1            # Nach dem Speichern Datei gegenprüfen
 
@@ -101,7 +101,7 @@ sub vars
       SERVER
       USER
       LIMIT
-      Folder
+      DBASE
       IdWidth
       MaxSize
       SaveChk
@@ -454,7 +454,7 @@ sub save
     my $uid         = $info->{UID} // 0;
     my $uidvalidity = $info->{UIDVALIDITY} // 0;
     my $uidwidth    = $self->{IdWidth} // 0;
-    my $folder      = $self->{Folder} // 0;
+    my $folder      = $self->{DBASE} // 0;
     my $savechk     = $self->{SaveChk};
     my $filename    = undef;
     my $filehandle  = undef;
@@ -636,7 +636,7 @@ sub database_new
 {
 
     my $self   = shift;
-    my $folder = $self->{Folder};
+    my $folder = $self->{DBASE};
 
     chdir;
     return 1 if ( -d $folder );
@@ -653,7 +653,7 @@ sub database_exists
 {
 
     my $self   = shift;
-    my $folder = $self->{Folder};
+    my $folder = $self->{DBASE};
 
     chdir;
     return ( -d $folder );
