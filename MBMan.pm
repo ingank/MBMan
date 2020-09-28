@@ -58,6 +58,7 @@ sub new
         UID      => 0,           # aktuelle bzw. vorgewählte UID
         EXPUNGE  => 0,           # Nachricht nach dem Herunterladen auf dem Server löschen?
         AUTOSAVE => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
+        TREND    => 'OLD'        # 'OLD' = Älteste, 'NEW' = Neueste Nachrichten bevorzugen
 
     };
 
@@ -532,24 +533,16 @@ sub limitlist
 
     my $self = shift;
 
-    my $args = {
-
-        Mailbox => 'INBOX',
-        Trend   => 'OLDEST',        # 'OLDEST' = Älteste, 'NEWEST' = Neueste Nachrichten
-        Limit   => $self->{LIMIT}
-
-    };
-
     while (@_) {
 
-        my $k = ucfirst lc shift;
+        my $k = uc shift;
         my $v = shift;
-        $args->{$k} = $v if defined $v;
+        $self->{$k} = $v if defined $v;
 
     }
 
-    my $mailbox = $args->{Mailbox};
-    my $limit   = $args->{Limit};
+    my $mailbox = $self->{MAILBOX};
+    my $limit   = $self->{LIMIT};
     my $imap    = $self->{IMAP};
 
     $imap->examine($mailbox);
