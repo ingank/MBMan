@@ -254,30 +254,6 @@ sub quota
 
 }
 
-sub usage
-  #
-  # Gibt folgende Werte als Liste zurück:
-  #
-  #     (x, y, z)
-  #
-  # x = Die Quota des IMAP-Benutzers auf dem Server in Byte.
-  # y = Aktuelle Nutzung des Speichers auf dem Server in Byte.
-  # z = Wieviel Prozent der Quota werden aktuell genutzt?
-  #
-  # Achtung: Der Aufruf dieser Methode zieht die Abarbeitung
-  # der Methode "sub quota()" nach sich. Bei der Nutzung sollte
-  # darauf geachtet werden, nur eine der beiden Methoden zielgerichtet
-  # für eine Operation zu nutzen.
-  #
-{
-
-    my $self = shift;
-    my ( $quota, $usage ) = $self->quota();
-    my $usage_cent = ( $usage / $quota * 100 );
-    return ( $quota, $usage, $usage_cent );
-
-}
-
 sub mailboxes
   #
   # Liefert eine Liste aller Postfächer
