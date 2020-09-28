@@ -48,7 +48,7 @@ sub new
         PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
         USEUID   => 1,           # nutze UID
         SERVER   => '',          # IMAP-Servername (fqdn) oder Server-IP
-        User     => '',          # dem IMAP-Server bekannte Nutzerkennung
+        USER     => '',          # dem IMAP-Server bekannte Nutzerkennung
         Password => '',          # zur Nutzerkennung passende Passphrase
         Limit    => 80,          # Maximale Füllung der Mailbox in Prozent
         Folder   => 'MBData',    # ~/${Folder}
@@ -99,7 +99,7 @@ sub vars
       PEEK
       USEUID
       SERVER
-      User
+      USER
       Limit
       Folder
       IdWidth
@@ -193,7 +193,7 @@ sub login
     die("Der Server unterstützt kein CRAM-MD5.\n")
       unless $imap->has_capability('AUTH=CRAM-MD5');
 
-    my $user = $self->{User}     // 0;
+    my $user = $self->{USER}     // 0;
     my $pass = $self->{Password} // 0;
 
     die("Benutzerkennung ist unbekannt.\n")
@@ -344,7 +344,7 @@ sub message
     my $expunge      = $args->{Expunge};
     my $save         = $args->{Save};
     my $imap         = $self->{Imap};
-    my $user         = $self->{User};
+    my $user         = $self->{USER};
     my $message      = undef;
     my $receivedsize = undef;
     my $md5checksum  = undef;
