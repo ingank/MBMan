@@ -312,17 +312,21 @@ sub mailboxes
 
     for my $item (@raw) {
 
-        next unless defined $item->{name};
+        my $name = $item->{name};
 
         for my $sigword (@sigwords) {
 
             my @attrs = grep { /$sigword/ } @{ $item->{attrs} };
 
-            if (@attrs) { $specials{$sigword} = $item->{name}; }
+            if (@attrs) {
+
+                $specials{$sigword} = $name;
+
+            }
 
         }
 
-        push @folders, $item->{name};
+        push @folders, $name;
 
     }
 
