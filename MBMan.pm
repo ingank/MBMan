@@ -580,32 +580,6 @@ sub limitlist
 
 }
 
-sub autolimit
-  #
-  # Löscht solange Nachrichten vom Server,
-  # bis das voreingestellte oder angegebene Limit unterschritten wird.
-  #
-{
-
-    my $self = shift;
-    my $imap = $self->{Imap};
-    return 0 unless $imap->IsAuthenticated;
-
-    while (1) {
-
-        # Limit nicht überschritten?
-        last unless $self->limit_reached();
-
-        # Älteste Nachricht holen und speichern
-        # Älteste Nachricht löschen
-        $self->message_unshift( Save => 1, Expunge => 1 );
-
-    }
-
-    return 1;
-
-}
-
 sub notes
   #
   # Gib gesammelte Infos an den Hostprozess
