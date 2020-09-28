@@ -53,7 +53,7 @@ sub new
         LIMIT    => 80,          # Maximale Füllung der Mailbox in Prozent
         DBASE    => 'MBData',    # ~/${DBASE}
         UIDWIDTH => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
-        SaveChk  => 1            # Nach dem Speichern Datei gegenprüfen
+        FILECHK  => 1            # Nach dem Speichern Datei gegenprüfen
 
     };
 
@@ -103,8 +103,7 @@ sub vars
       LIMIT
       DBASE
       UIDWIDTH
-      MaxSize
-      SaveChk
+      FILECHK
       ServerIDTag
     );
 
@@ -325,7 +324,7 @@ sub message
         Uid     => 'OLDEST',           # 'OLDEST' = Älteste, 'NEWEST' = Neueste, ansonsten die UID
         Expunge => 0,                  # Nachricht nach dem Herunterladen auf dem Server löschen?
         Save    => 1,                  # Nachricht nach dem Herunterladen automatisch speichern?
-        Filechk => $self->{SaveChk}    # Gespeicherte Nachricht prüfen?
+        Filechk => $self->{FILECHK}    # Gespeicherte Nachricht prüfen?
 
     };
 
@@ -337,7 +336,7 @@ sub message
 
     }
 
-    $self->{SaveChk} = $args->{Filechk};
+    $self->{FILECHK} = $args->{Filechk};
 
     my $mailbox      = $args->{Mailbox};
     my $uid          = $args->{Uid};
@@ -455,7 +454,7 @@ sub save
     my $uidvalidity = $info->{UIDVALIDITY} // 0;
     my $uidwidth    = $self->{UIDWIDTH} // 0;
     my $folder      = $self->{DBASE} // 0;
-    my $savechk     = $self->{SaveChk};
+    my $savechk     = $self->{FILECHK};
     my $filename    = undef;
     my $filehandle  = undef;
     my $filedata    = undef;
