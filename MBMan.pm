@@ -322,9 +322,10 @@ sub message
     my $args = {
 
         Mailbox => 'INBOX',
-        Uid     => 'OLDEST',    # 'OLDEST' = Älteste, 'NEWEST' = Neueste, ansonsten die UID
-        Expunge => 0,           # Nachricht nach dem Herunterladen auf dem Server löschen?
-        Save    => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
+        Uid     => 'OLDEST',           # 'OLDEST' = Älteste, 'NEWEST' = Neueste, ansonsten die UID
+        Expunge => 0,                  # Nachricht nach dem Herunterladen auf dem Server löschen?
+        Save    => 1,                  # Nachricht nach dem Herunterladen automatisch speichern?
+        Filechk => $self->{SaveChk}    # Gespeicherte Nachricht prüfen?
 
     };
 
@@ -335,6 +336,8 @@ sub message
         $args->{$k} = $v if defined $v;
 
     }
+
+    $self->{SaveChk} = $args->{Filechk};
 
     my $mailbox      = $args->{Mailbox};
     my $uid          = $args->{Uid};
