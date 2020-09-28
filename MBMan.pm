@@ -47,7 +47,7 @@ sub new
         SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
         PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
         USEUID   => 1,           # nutze UID
-        Server   => '',          # IMAP-Servername (fqdn) oder Server-IP
+        SERVER   => '',          # IMAP-Servername (fqdn) oder Server-IP
         User     => '',          # dem IMAP-Server bekannte Nutzerkennung
         Password => '',          # zur Nutzerkennung passende Passphrase
         Limit    => 80,          # Maximale Füllung der Mailbox in Prozent
@@ -98,7 +98,7 @@ sub vars
       SSL
       PEEK
       USEUID
-      Server
+      SERVER
       User
       Limit
       Folder
@@ -144,7 +144,7 @@ sub connect
     return 1 if $imap->IsConnected;
 
     my $notes  = $self->{Notes};
-    my $server = $self->{Server};
+    my $server = $self->{SERVER};
 
     die("IMAP-Server-Adresse ist unbekannt.\n")
       unless $server;
