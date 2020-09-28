@@ -52,8 +52,12 @@ sub new
         PASS     => '',          # zur Nutzerkennung passende Passphrase
         LIMIT    => 80,          # Maximale Füllung der Mailbox in Prozent
         DBASE    => 'MBData',    # ~/${DBASE}
-        UIDWIDTH => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
-        FILECHK  => 1            # Nach dem Speichern Datei gegenprüfen
+        UIDWIDTH => 6,           # Länge des UID-Indizes im Dateinamen (bspw. '3' für 000 bis 999)
+        FILECHK  => 1,           # Nach dem Speichern Datei gegenprüfen
+        MAILBOX  => 'INBOX',     # aktuelles bzw. vorgewähltes Postfach
+        UID      => 0,           # aktuelle bzw. vorgewählte UID
+        EXPUNGE  => 0,           # Nachricht nach dem Herunterladen auf dem Server löschen?
+        AUTOSAVE => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
 
     };
 
@@ -317,30 +321,18 @@ sub message
 
     my $self = shift;
 
-    my $args = {
-
-        Mailbox => 'INBOX',
-        Uid     => 'OLDEST',           # 'OLDEST' = Älteste, 'NEWEST' = Neueste, ansonsten die UID
-        Expunge => 0,                  # Nachricht nach dem Herunterladen auf dem Server löschen?
-        Save    => 1,                  # Nachricht nach dem Herunterladen automatisch speichern?
-        Filechk => $self->{FILECHK}    # Gespeicherte Nachricht prüfen?
-
-    };
-
     while (@_) {
 
         my $k = ucfirst lc shift;
         my $v = shift;
-        $args->{$k} = $v if defined $v;
+        $self->{$k} = $v if defined $v;
 
     }
 
-    $self->{FILECHK} = $args->{Filechk};
-
-    my $mailbox      = $args->{Mailbox};
-    my $uid          = $args->{Uid};
-    my $expunge      = $args->{Expunge};
-    my $save         = $args->{Save};
+    my $mailbox      = $self->{MAILBOX};
+    my $uid          = $self->{UID};
+    my $expunge      = $self->{EXPUNGE};
+    my $save         = $self->{AUTOSAVE};
     my $imap         = $self->{IMAP};
     my $user         = $self->{USER};
     my $message      = undef;
@@ -371,17 +363,6 @@ sub message
         $info->{WARNING} = "MAILBOX_EMPTY";
         $data->{INFO}    = $info;
         return $data;
-
-    }
-
-    if ( $uid eq 'OLDEST' ) {
-
-        $uid = ${$uid_list}[0];
-
-    }
-    if ( $uid eq 'NEWEST' ) {
-
-        $uid = ${$uid_list}[-1];
 
     }
 
