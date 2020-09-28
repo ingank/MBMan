@@ -53,7 +53,6 @@ sub new
         Limit    => 80,          # Maximale Füllung der Mailbox in Prozent
         Folder   => 'MBData',    # ~/${Folder}
         IdWidth  => 6,           # Länge des UID-Indizes (bspw. '3' für 000 bis 999)
-        MaxSize  => 0,           # Maximale Größe von Nachrichten in Byte; 0 = unbegrenzt
         SaveChk  => 1            # Nach dem Speichern Datei gegenprüfen
 
     };
