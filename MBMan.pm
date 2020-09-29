@@ -571,19 +571,11 @@ sub logout
   #
 {
 
-    my $self  = shift;
-    my $imap  = $self->{IMAP};
-    my $notes = $self->{Notes};
-
+    my $self = shift;
+    my $imap = $self->{IMAP};
     return 1 unless $imap->IsConnected;
-
     $imap->logout;
-
     return 0 if $imap->IsConnected;
-
-    %{$notes} = ();
-    $notes->{'00_Status'} = 'Disconnected';
-
     return 1;
 
 }
