@@ -565,17 +565,6 @@ sub limitlist
 
 }
 
-sub notes
-  #
-  # Gib gesammelte Infos an den Hostprozess
-  #
-{
-
-    my $self = shift;
-    return $self->{Notes};
-
-}
-
 sub logout
   #
   # IMAP LOGOUT
