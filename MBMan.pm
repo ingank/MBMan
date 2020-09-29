@@ -580,20 +580,6 @@ sub logout
 
 }
 
-sub database_exists
-  #
-  # Gebe WAHR zurück, wenn eine Datenbasis existiert
-  #
-{
-
-    my $self   = shift;
-    my $folder = $self->{DBASE};
-
-    chdir;
-    return ( -d $folder );
-
-}
-
 # interne Funktionen
 
 sub _str_chomp
