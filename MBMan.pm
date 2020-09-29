@@ -580,25 +580,6 @@ sub logout
 
 }
 
-# Dateiverwaltung
-
-sub database_new
-  #
-  # Erzeuge eine neue Datenbank für das Nachrichtenbackup
-  #
-{
-
-    my $self   = shift;
-    my $folder = $self->{DBASE};
-
-    chdir;
-    return 1 if ( -d $folder );
-    mkdir( $folder, 0755 ) || die;
-    return 0 if ( -d $folder );
-    return
-
-}
-
 sub database_exists
   #
   # Gebe WAHR zurück, wenn eine Datenbasis existiert
