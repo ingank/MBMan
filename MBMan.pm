@@ -43,19 +43,19 @@ sub new
 
     my $self = {
 
-        DEBUG    => 0,           # Verwende Mail::IMAPClient im Debug-Modus
+        DEBUG    => 0,           # Verwende Mail::IMAPClient nicht im Debug-Modus
         SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
-        PEEK     => 1,           # 1 = setze nicht das /SEEN Flag
-        USEUID   => 1,           # nutze UID
+        PEEK     => 1,           # Setze nicht das /SEEN Flag
+        USEUID   => 1,           # Nutze UID
         SERVER   => '',          # IMAP-Servername (fqdn) oder Server-IP
-        USER     => '',          # dem IMAP-Server bekannte Nutzerkennung
-        PASS     => '',          # zur Nutzerkennung passende Passphrase
+        USER     => '',          # Nutzerkennung
+        PASS     => '',          # Passphrase
         LIMIT    => 80,          # Maximale Füllung der Mailbox in Prozent
-        DBASE    => 'MBData',    # ~/${DBASE}
-        UIDWIDTH => 6,           # Länge des UID-Indizes im Dateinamen (bspw. '3' für 000 bis 999)
+        DBASE    => 'MBData',    # Name des Datenordners (unterhalb von ``~/'')
+        UIDWIDTH => 6,           # Länge des UID-Indizes im Dateinamen (Bsp.: '3' für 000 bis 999)
         FILECHK  => 1,           # Nach dem Speichern Datei gegenprüfen
-        MAILBOX  => 'INBOX',     # aktuelles bzw. vorgewähltes Postfach
-        UID      => 0,           # aktuelle bzw. vorgewählte UID
+        MAILBOX  => 'INBOX',     # Aktuelles bzw. vorgewähltes Postfach
+        UID      => 0,           # Aktuelle bzw. vorgewählte UID
         EXPUNGE  => 0,           # Nachricht nach dem Herunterladen auf dem Server löschen?
         AUTOSAVE => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
         TREND    => 'OLD'        # 'OLD' = Älteste, 'NEW' = Neueste Nachrichten bevorzugen
@@ -64,7 +64,7 @@ sub new
 
     while (@_) {
 
-        my $k = ucfirst lc shift;
+        my $k = uc shift;
         my $v = shift;
         $self->{$k} = $v if defined $v;
 
@@ -72,14 +72,16 @@ sub new
 
     bless $self, ref($class) || $class;
 
-    $self->{IMAP} = Mail::IMAPClient->new(
+    die("Instanzierung der Klasse Mail::IMAPClient fehlgeschlagen.\n")
+
+      unless $self->{IMAP} = Mail::IMAPClient->new(
 
         Debug => $self->{DEBUG},
         Ssl   => $self->{SSL},
         Peek  => $self->{PEEK},
         Uid   => $self->{USEUID}
 
-    ) || die("Instanzierung der Klasse Mail::IMAPClient fehlgeschlagen.\n");
+      );
 
     return $self;
 
