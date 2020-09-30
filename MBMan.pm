@@ -280,6 +280,7 @@ sub mailboxes
       unless $imap->IsAuthenticated;
 
     my @sigwords = qw (
+
       All
       Archive
       Drafts
@@ -287,22 +288,27 @@ sub mailboxes
       Junk
       Sent
       Trash
+
     );
 
-    my @folders;
-    my %specials;
     my @raw;
+    my @folders;
+    my @attrs;
+    my %specials;
     my $data;
+    my $item;
+    my $name;
+    my $sigword;
 
     @raw = $imap->folders_hash;
 
-    for my $item (@raw) {
+    for $item (@raw) {
 
-        my $name = $item->{name};
+        $name = $item->{name};
 
-        for my $sigword (@sigwords) {
+        for $sigword (@sigwords) {
 
-            my @attrs = grep { /$sigword/ } @{ $item->{attrs} };
+            @attrs = grep { /$sigword/ } @{ $item->{attrs} };
 
             if (@attrs) {
 
