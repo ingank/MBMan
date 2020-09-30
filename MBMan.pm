@@ -92,26 +92,34 @@ sub vars
   # Gibt eine Hashreferenz auf Kopien von internen Variablen zurück.
   # Die Variablen des IMAP-Client-Objektes werden ausgeblendet.
   # Zur Maximierung der Kontrolle ist die Variablen-Liste als
-  # White-List umgesetzt. Ein weiterer Vorteil ist die einfache
-  # Umsetzung von verschiedenen Listensets oder die Modularisierung.
+  # White-List umgesetzt. Vorteil ist die einfache Umsetzung von
+  # Listensets bzw. die Modularisierung.
   #
 {
 
-    my $self = shift;
-    my $data = {};
-
+    my $self     = shift;
+    my $data     = undef;
     my %keywords = map { $_, 1 } qw (
+
       DEBUG
       SSL
       PEEK
       USEUID
       SERVER
       USER
+      PASS
       LIMIT
       DBASE
       UIDWIDTH
       FILECHK
+      MAILBOX
+      UID
+      EXPUNGE
+      AUTOSAVE
+      TREND
       SERVER_ID_TAG
+      SERVER_RESPONSE
+
     );
 
     for my $keyword ( keys(%keywords) ) {
@@ -140,7 +148,7 @@ sub connect
 
     while (@_) {
 
-        my $k = ucfirst lc shift;
+        my $k = uc shift;
         my $v = shift;
         $self->{$k} = $v if defined $v;
 

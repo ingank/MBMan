@@ -80,7 +80,7 @@ sub main {
 
         }
 
-        $mbman = MBMan->new( Debug => $opt_V );
+        $mbman = MBMan->new( DEBUG => $opt_V );
 
         if ( $opt_c and $opt_S ) {
 
@@ -183,7 +183,7 @@ sub signal_handler {
 
 END {
 
-    if ( $mbman->{Imap}->IsConnected() ) {
+    if ( $mbman->{IMAP}->IsConnected() ) {
 
         warn "Die Verbindung zum IMAP-Server wird kontrolliert beendet!\n";
 
