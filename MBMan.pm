@@ -454,11 +454,11 @@ sub save
     my $uid         = $info->{UID} // 0;
     my $uidvalidity = $info->{UIDVALIDITY} // 0;
     my $uidwidth    = $self->{UIDWIDTH} // 0;
-    my $folder      = $self->{DBASE} // 0;
-    my $savechk     = $self->{FILECHK};
-    my $filename    = undef;
-    my $filehandle  = undef;
-    my $filedata    = undef;
+    my $dbase       = $self->{DBASE} // 0;
+    my $filechk     = $self->{FILECHK} // 1;
+    my $filename;
+    my $filehandle;
+    my $filedata;
 
     die("Kann Nachricht nicht speichern: zu wenig Argumente!\n")
       unless $message
@@ -471,28 +471,29 @@ sub save
     die("Kann nicht in das Home-Verzeichnis wechseln.\n")
       unless chdir;
 
-    unless ( -d $folder ) {
+    die("Kann Datenbankverzeichnis ~/$dbase nicht erstellen.\n")
+      unless ( -d $dbase ) || mkdir( $dbase, 0755 );
 
-        die("Kann Datenbankverzeichnis ~/$folder nicht erstellen.\n")
-          unless mkdir( $folder, 0755 );
+    die("Kein Datenbankverzeichnis ~/$dbase vorhanden\n.")
+      unless ( -d $dbase );
 
-    }
+    die("Kann nicht in das Datenbankverzeichnis $dbase wechseln.\n")
+      unless chdir $dbase;
 
-    die("Kein Datenbankverzeichnis ~/$folder vorhanden\n.")
-      unless ( -d $folder );
+    die("Kann den Benutzerzweig $user nicht erstellen.\n")
+      unless ( -d $user ) || mkdir( $user, 0755 );
 
-    die("Kann nicht in das Datenbankverzeichnis $folder wechseln.\n")
-      unless chdir $folder;
-
-    unless ( -d $user ) {
-
-        die("Kann den Benutzerzweig $user nicht erstellen.\n")
-          unless mkdir( $user, 0755 );
-
-    }
+    die("Kein Benutzerzweig $user vorhanden.\n")
+      unless ( -d $user );
 
     die("Kann nicht in den Benutzerzweig $user wechseln.\n")
       unless chdir $user;
+
+    die("Kann den Mailboxzweig $mailbox nicht erstellen.\n")
+      unless ( -d $mailbox ) || mkdir( $mailbox, 0755 );
+
+    die("Kann nicht in den Mailboxzweig $mailbox wechseln.\n")
+      unless chdir $mailbox;
 
     $filename = $uidvalidity;
     $filename .= " - " . ( sprintf "%0" . $uidwidth . "d", $uid );
@@ -504,7 +505,7 @@ sub save
     die("Datei $filename konnte nicht geschrieben werden.\n")
       unless ( -f $filename );
 
-    if ($savechk) {
+    if ($filechk) {
 
         $filehandle = FileHandle->new( $filename, "r" );
         $filedata = do { local $/; <$filehandle> };
