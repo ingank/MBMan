@@ -244,9 +244,8 @@ sub quota
     die("Voraussetzung für die Ermittlung der Quota ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
 
-    my $quota = 0;
-    my $usage = 0;
-
+    my $quota     = undef;
+    my $usage     = undef;
     my $quotaroot = $imap->getquotaroot();
 
     for ( @{$quotaroot} ) {
