@@ -331,36 +331,41 @@ sub mailboxes
 
 sub message
   #
-  # Holt eine Nachricht eines Postfaches vom Server
+  # Holt eine Nachricht vom Server
   #
 {
 
     my $self = shift;
 
+    $self->{MAILBOX}  = 'INBOX';
+    $self->{UID}      = 0;
+    $self->{EXPUNGE}  = 0;
+    $self->{AUTOSAVE} = 1;
+
     while (@_) {
 
-        my $k = ucfirst lc shift;
+        my $k = uc shift;
         my $v = shift;
-        $self->{$k} = $v if defined $v;
+        $self->{$k} = $v if $v;
 
     }
 
-    my $mailbox      = $self->{MAILBOX};
-    my $uid          = $self->{UID};
-    my $expunge      = $self->{EXPUNGE};
-    my $save         = $self->{AUTOSAVE};
-    my $imap         = $self->{IMAP};
-    my $user         = $self->{USER};
-    my $message      = undef;
-    my $receivedsize = undef;
-    my $md5checksum  = undef;
-    my $serversize   = undef;
-    my $uid_list     = undef;
-    my $uidvalidity  = undef;
-    my $internaldate = undef;
-    my $headerdate   = undef;
-    my $info         = undef;
-    my $data         = undef;
+    my $mailbox = $self->{MAILBOX};
+    my $uid     = $self->{UID};
+    my $expunge = $self->{EXPUNGE};
+    my $save    = $self->{AUTOSAVE};
+    my $imap    = $self->{IMAP};
+    my $user    = $self->{USER};
+    my $message;
+    my $receivedsize;
+    my $md5checksum;
+    my $serversize;
+    my $uid_list;
+    my $uidvalidity;
+    my $internaldate;
+    my $headerdate;
+    my $info;
+    my $data;
 
     die("Voraussetzung für den Zugriff auf Server-Nachrichten ist der AUTHENTICATED STATE!\n")
       unless $imap->IsAuthenticated;
@@ -383,7 +388,7 @@ sub message
     }
 
     die("Nachricht mit der UID $uid ist nicht auf dem Server zu finden.\n")
-      unless scalar grep { /$uid/ } @{$uid_list};
+      unless scalar grep { /^$uid$/ } @{$uid_list};
 
     $message               = $imap->message_string($uid);
     $receivedsize          = length($message);
