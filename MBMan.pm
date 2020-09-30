@@ -191,7 +191,7 @@ sub login
 
     while (@_) {
 
-        my $k = ucfirst lc shift;
+        my $k = uc shift;
         my $v = shift;
         $self->{$k} = $v if defined $v;
 
