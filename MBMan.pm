@@ -231,6 +231,21 @@ sub login
 
 }
 
+sub logout
+  #
+  # IMAP LOGOUT
+  #
+{
+
+    my $self = shift;
+    my $imap = $self->{IMAP};
+    return 1 unless $imap->IsConnected;
+    $imap->logout;
+    return 0 if $imap->IsConnected;
+    return 1;
+
+}
+
 sub quota
   #
   # Gibt folgende Werte als Liste zurück:
@@ -567,21 +582,6 @@ sub limitlist
     }
 
     return \@data;
-
-}
-
-sub logout
-  #
-  # IMAP LOGOUT
-  #
-{
-
-    my $self = shift;
-    my $imap = $self->{IMAP};
-    return 1 unless $imap->IsConnected;
-    $imap->logout;
-    return 0 if $imap->IsConnected;
-    return 1;
 
 }
 
