@@ -415,17 +415,7 @@ sub message
     $info->{SAVED}         = 0;
     $info->{EXPUNGED}      = 0;
     $info->{CHECKED}       = 0;
-    $data->{INFO}          = $info;
     $data->{MESSAGE}       = $message;
-
-    if ($save) {
-
-        die("Nachricht konnte nicht gespeichert werden.")
-          unless $self->save($data);
-
-        $data->{SAVED} = 1;
-
-    }
 
     if ($expunge) {
 
