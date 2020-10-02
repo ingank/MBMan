@@ -343,9 +343,9 @@ sub message
 
     my $args = {
 
-        MAILBOX => $self->{MAILBOX};
-        EXPUNGE => $self->{EXPUNGE};
-        UID     => 0;
+        MAILBOX => $self->{MAILBOX},
+        EXPUNGE => $self->{EXPUNGE},
+        UID     => 0,
 
     };
 
@@ -425,11 +425,11 @@ sub message
         die("Kann Nachricht auf dem Server nicht löschen\n")
           unless $imap->expunge;
 
-        $data->{INFO}->{EXPUNGED} = 1;
+        $info->{EXPUNGED} = 1;
 
     }
 
-    $self->{MESSAGE} = $data;
+    $data->{INFO} = $info;
     return $data;
 
 }
