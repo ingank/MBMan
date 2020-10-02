@@ -58,7 +58,6 @@ sub new
         # LOKALE BACKUP-DATENBANK
         DBASE    => 'MBData',    # Name des Datenordners (unterhalb von ``~/'')
         UIDWIDTH => 6,           # Länge des UID-Indizes im Dateinamen (Bsp.: '3' für 000 bis 999)
-        AUTOSAVE => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
         FILECHK  => 0,           # Nach dem Speichern Datei gegenprüfen
 
         # LIMITER
