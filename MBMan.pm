@@ -43,22 +43,27 @@ sub new
 
     my $self = {
 
-        DEBUG    => 0,           # Verwende Mail::IMAPClient nicht im Debug-Modus
-        SSL      => 1,           # SSL-verschlüsselte Client-/Serverkommunikation
-        PEEK     => 1,           # Setze nicht das /SEEN Flag
-        USEUID   => 1,           # Nutze UID
-        SERVER   => '',          # IMAP-Servername (fqdn) oder Server-IP
-        USER     => '',          # Nutzerkennung
-        PASS     => '',          # Passphrase
-        LIMIT    => 80,          # Maximale Füllung der Mailbox in Prozent
+        # IMAP-SERVER
+        DEBUG   => 0,          # Verwende Mail::IMAPClient nicht im Debug-Modus
+        SSL     => 1,          # SSL-verschlüsselte Client-/Serverkommunikation
+        PEEK    => 1,          # Setze nicht das /SEEN Flag
+        USEUID  => 1,          # Nutze UID
+        UID     => 0,          # Zuletzt verwendete UID
+        SERVER  => '',         # IMAP-Servername (fqdn) oder Server-IP
+        USER    => '',         # Nutzerkennung
+        PASS    => '',         # Passphrase
+        MAILBOX => 'INBOX',    # Standard-Postfach
+        EXPUNGE => 0,          # Nachricht nach dem Herunterladen auf dem Server löschen?
+
+        # LOKALE BACKUP-DATENBANK
         DBASE    => 'MBData',    # Name des Datenordners (unterhalb von ``~/'')
         UIDWIDTH => 6,           # Länge des UID-Indizes im Dateinamen (Bsp.: '3' für 000 bis 999)
-        FILECHK  => 1,           # Nach dem Speichern Datei gegenprüfen
-        MAILBOX  => 'INBOX',     # Aktuelles bzw. vorgewähltes Postfach
-        UID      => 0,           # Aktuelle bzw. vorgewählte UID
-        EXPUNGE  => 0,           # Nachricht nach dem Herunterladen auf dem Server löschen?
         AUTOSAVE => 1,           # Nachricht nach dem Herunterladen automatisch speichern?
-        TREND    => 'OLD'        # 'OLD' = Älteste, 'NEW' = Neueste Nachrichten bevorzugen
+        FILECHK  => 0,           # Nach dem Speichern Datei gegenprüfen
+
+        # LIMITER
+        LIMIT => 80,             # Maximale Füllung der Mailbox in Prozent
+        TREND => 'OLD',          # 'OLD' = Älteste, 'NEW' = Neueste Nachrichten bevorzugen
 
     };
 
