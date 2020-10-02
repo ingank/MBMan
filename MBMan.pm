@@ -341,23 +341,25 @@ sub message
 
     my $self = shift;
 
-    $self->{MAILBOX}  = 'INBOX';
-    $self->{UID}      = 0;
-    $self->{EXPUNGE}  = 0;
-    $self->{AUTOSAVE} = 1;
+    my $args = {
+
+        MAILBOX => $self->{MAILBOX};
+        EXPUNGE => $self->{EXPUNGE};
+        UID     => 0;
+
+    };
 
     while (@_) {
 
         my $k = uc shift;
         my $v = shift;
-        $self->{$k} = $v if $v;
+        $args->{$k} = $v if $v;
 
     }
 
-    my $mailbox = $self->{MAILBOX};
-    my $uid     = $self->{UID};
-    my $expunge = $self->{EXPUNGE};
-    my $save    = $self->{AUTOSAVE};
+    my $mailbox = $args->{MAILBOX};
+    my $expunge = $args->{EXPUNGE};
+    my $uid     = $args->{UID};
     my $imap    = $self->{IMAP};
     my $user    = $self->{USER};
     my $message;
