@@ -44,7 +44,6 @@ our $opt_L = '';    # limit in percent
 # Optionen
 our $opt_V = 0;     # verbose
 our $opt_E = 0;     # expunge?
-our $opt_A = 0;     # autosave?
 our $opt_F = 0;     # message file validity test?
 
 # Befehle
@@ -65,7 +64,7 @@ sub main {
 
     if (@ARGV) {
 
-        getopts('S:U:P:I:M:L:VEAFhclfqima');
+        getopts('S:U:P:I:M:L:VEFhclfqima');
 
         if ($opt_h) {
 
@@ -82,22 +81,22 @@ sub main {
 
         $mbman = MBMan->new( DEBUG => $opt_V );
 
-        if ( $opt_c and $opt_S ) {
+        if ($opt_c) {
 
             $mbman->connect(
 
-                Server => $opt_S
+                SERVER => $opt_S
 
             );
 
         }
 
-        if ( $opt_l and $opt_U and $opt_P ) {
+        if ($opt_l) {
 
             $mbman->login(
 
-                User     => $opt_U,
-                Password => $opt_P
+                USER => $opt_U,
+                PASS => $opt_P
 
             );
 
@@ -117,16 +116,15 @@ sub main {
 
         if ($opt_m) {
 
-            my $data = $mbman->message(
+            my $message = $mbman->message(
 
-                Expunge => $opt_E,
-                Save    => $opt_A,
-                Mailbox => $opt_M,
-                Uid     => $opt_I
+                EXPUNGE => $opt_E,
+                MAILBOX => $opt_M,
+                UID     => $opt_I
 
             );
 
-            print Dumper $data->{INFO};
+            print Dumper $message->{INFO};
 
         }
 
@@ -140,24 +138,26 @@ sub main {
 
             my $limitlist = $mbman->limitlist(
 
-                Limit => $opt_L
+                LIMIT => $opt_L
 
             );
 
-            for ( @{$limitlist} ) {
+            print Dumper $limitlist;
 
-                my $message = $mbman->message(
+            # for ( @{$limitlist} ) {
 
-                    Uid     => $_,
-                    Filechk => $opt_F,
-                    Expunge => $opt_E,
-                    Save    => $opt_A
+            #     my $message = $mbman->message(
 
-                );
+            #         Uid     => $_,
+            #         Filechk => $opt_F,
+            #         Expunge => $opt_E,
+            #         Save    => $opt_A
 
-                print Dumper $message->{INFO};
+            #     );
 
-            }
+            #     print Dumper $message->{INFO};
+
+            # }
 
         }
 
