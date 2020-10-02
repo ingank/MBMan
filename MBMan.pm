@@ -16,8 +16,6 @@ use Mail::IMAPClient;
 use Digest::MD5::File qw(md5_hex);    # MD5 Prüfsummen erzeugen
 use FileHandle;                       # Einfache Dateioperationen
 
-# Objekthandling
-
 sub new
   #
   # Konstruktor
@@ -25,8 +23,6 @@ sub new
 {
 
     my $class = shift;
-
-    # Voreinstellungen
 
     my $self = {
 
