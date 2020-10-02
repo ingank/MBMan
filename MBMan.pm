@@ -550,16 +550,23 @@ sub limitlist
 
     my $self = shift;
 
+    my $args = {
+
+        MAILBOX => $self->{MAILBOX},
+        LIMIT   => $self->{LIMIT},
+
+    };
+
     while (@_) {
 
         my $k = uc shift;
         my $v = shift;
-        $self->{$k} = $v if defined $v;
+        $args->{$k} = $v if $v;
 
     }
 
-    my $mailbox = $self->{MAILBOX};
-    my $limit   = $self->{LIMIT};
+    my $mailbox = $args->{MAILBOX};
+    my $limit   = $args->{LIMIT};
     my $imap    = $self->{IMAP};
 
     $imap->examine($mailbox);
@@ -573,6 +580,7 @@ sub limitlist
     for my $uid ( @{$uid_list} ) {
 
         last if $usage < $limit_border;
+
         $usage -= $fetch->{$uid}->{'RFC822.SIZE'};
         push @data, $uid;
 
