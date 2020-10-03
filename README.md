@@ -17,7 +17,7 @@ cpanp -i Digest::MD5::File
 cpanp -i Digest::HMAC_MD5
 cpanp -i IO::Socket::SSL
 ```
-Dabei die automatische Auflösung von Abhängigkeiten jeweils mit '3' automatisieren.
+Dabei die automatische Auflösung von Abhängigkeiten jeweils mit '3' bestätigen.
 
 ## Anwendung
 ```
