@@ -22,19 +22,31 @@ Dabei die automatische Auflösung von Abhängigkeiten jeweils mit '3' bestätige
 ## Anwendung
 ```
 use MBMan;
+
 my $mbman = MBMan->new();
 
 $mbman->connect(
-    Server => 'imap.server.tld'
+    SERVER => 'imap.server.tld'
 );
 
 $mbman->login(
-    User => 'user@domain.tld',
-    Password => 'pa$$w0rd'
+    USER => 'user@domain.tld',
+    PASS => 'pa$$w0rd'
 );
 
-$mbman->new_database();
-$mbman->unshift_message() if mbman->limit_reached();
+my $uidlist = $mbman->limitlist(
+    MAILBOX => 'foo',
+    LIMIT => 80
+}
+
+my $message = $mbman->message(
+    UID => $uidlist->[0],
+    MAILBOX => 'foo',
+    EXPUNGE => 0
+);
+
+$mbman->save( $message );
+
 $mbman->logout();
 ```
 ## Lokales Backup inspizieren
