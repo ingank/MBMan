@@ -6,18 +6,18 @@ Eine IMAP Mailboxmanagement API in Perl.
 ```
 git clone git@github.com:ingank/MBMan.git
 ```
-## Abhängigkeiten
+## Abhängigkeiten auflösen
 ```
-echo 'reload index' | cpan
-cpan CPAN
-cpan CPANPLUS
-cpanp -x
-cpanp -i Mail::IMAPClient
-cpanp -i Digest::MD5::File
-cpanp -i Digest::HMAC_MD5
-cpanp -i IO::Socket::SSL
+cpan
+> reload index
+> install CPAN
+> reload cpan
+> install Mail::IMAPClient
+> install Digest::MD5::File
+> install Digest::HMAC_MD5
+> install IO::Socket::SSL
+> quit
 ```
-Dabei die automatische Auflösung von Abhängigkeiten jeweils mit '3' bestätigen.
 
 ## Anwendung
 ```
