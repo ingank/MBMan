@@ -10,8 +10,6 @@ git clone git@github.com:ingank/MBMan.git
 ```
 cpan
 > reload index
-> install CPAN
-> reload cpan
 > install Mail::IMAPClient
 > install Digest::MD5::File
 > install Digest::HMAC_MD5
